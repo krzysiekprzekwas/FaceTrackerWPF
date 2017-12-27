@@ -1,9 +1,11 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using WebEye.Controls.Wpf;
 
 namespace FaceTracker
@@ -15,32 +17,44 @@ namespace FaceTracker
         public MainWindow()
         {
             InitializeComponent();
-
             InitializeComboBox();
+
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromMilliseconds(33);
+            timer.Tick += timer_Tick;
+            timer.Start();
+        }
+
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            if (webCameraControl.IsCapturing)
+            {
+                WebCameraView.Source = Convert(webCameraControl.GetCurrentImage());
+            }
         }
 
         private void InitializeComboBox()
         {
-            comboBox.ItemsSource = webCameraControl.GetVideoCaptureDevices();
+            ComboBox.ItemsSource = webCameraControl.GetVideoCaptureDevices();
 
-            if (comboBox.Items.Count > 0)
+            if (ComboBox.Items.Count > 0)
             {
-                comboBox.SelectedItem = comboBox.Items[0];
+                ComboBox.SelectedItem = ComboBox.Items[0];
             }
         }
 
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            startButton.IsEnabled = e.AddedItems.Count > 0;
+            StartButton.IsEnabled = e.AddedItems.Count > 0;
         }
 
         private void OnStartButtonClick(object sender, RoutedEventArgs e)
         {
-            var cameraId = (WebCameraId)comboBox.SelectedItem;
+            var cameraId = (WebCameraId)ComboBox.SelectedItem;
             webCameraControl.StartCapture(cameraId);
 
-            stopButton.IsEnabled = true;
-            imageButton.IsEnabled = true;
+            StopButton.IsEnabled = true;
+            ImageButton.IsEnabled = true;
         }
 
         private void OnStopButtonClick(object sender, RoutedEventArgs e)
@@ -50,7 +64,7 @@ namespace FaceTracker
 
         private void OnImageButtonClick(object sender, RoutedEventArgs e)
         {
-            webCameraView.Source = Convert(webCameraControl.GetCurrentImage());
+            WebCameraView.Source = Convert(webCameraControl.GetCurrentImage());
         }
 
         public BitmapImage Convert(Bitmap src)

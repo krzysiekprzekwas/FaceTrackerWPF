@@ -3,13 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:wpf="clr-namespace:WebEye.Controls.Wpf;assembly=WebEye.Controls.Wpf.WebCameraControl"
         Title="MainWindow" Width="640" Height="480" MinWidth="400" MinHeight="250">
-    <DockPanel>
-        <StackPanel Orientation="Vertical" DockPanel.Dock="Right" HorizontalAlignment="Center">
-            <ComboBox x:Name="comboBox" Width="115.333" DisplayMemberPath="Name" SelectionChanged="OnSelectionChanged" />
-            <Button x:Name="startButton" Content="Start" Width="75" Margin="4,0,0,0" IsEnabled="False" Click="OnStartButtonClick" />
-            <Button x:Name="stopButton" Content="Stop" Width="75" Margin="4,0,0,0" IsEnabled="False" Click="OnStopButtonClick" />
-            <Button x:Name="imageButton" Content="Image" Width="75" Margin="4,0,0,0" IsEnabled="False" Click="OnImageButtonClick" />
+    <DockPanel Background="AliceBlue">
+        <StackPanel Orientation="Vertical" DockPanel.Dock="Right" HorizontalAlignment="Center" Background="LightBlue">
+            <ComboBox x:Name="ComboBox" Width="120" DisplayMemberPath="Name" Margin="5,10,5,0" SelectionChanged="OnSelectionChanged" />
+            <Button x:Name="StartButton" Content="Start" Width="90" Margin="0,10,0,0" IsEnabled="False" Click="OnStartButtonClick" />
+            <Button x:Name="StopButton" Content="Stop" Width="90" Margin="0,10,0,0" IsEnabled="False" Click="OnStopButtonClick" />
+            <Button x:Name="ImageButton" Content="Image" Width="90" Margin="0,10,0,0" IsEnabled="False" Click="OnImageButtonClick" />
         </StackPanel>
-        <Image x:Name="webCameraView" />
+        <Image x:Name="WebCameraView" />
     </DockPanel>
 </Window>
