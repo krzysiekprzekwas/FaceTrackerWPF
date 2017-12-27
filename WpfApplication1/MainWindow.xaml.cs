@@ -1,28 +1,68 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using WebEye.Controls.Wpf;
 
-namespace WpfApplication1
+namespace FaceTracker
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
+
+        WebCameraControl webCameraControl = new WebCameraControl();
         public MainWindow()
         {
             InitializeComponent();
+
+            InitializeComboBox();
+        }
+
+        private void InitializeComboBox()
+        {
+            comboBox.ItemsSource = webCameraControl.GetVideoCaptureDevices();
+
+            if (comboBox.Items.Count > 0)
+            {
+                comboBox.SelectedItem = comboBox.Items[0];
+            }
+        }
+
+        private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            startButton.IsEnabled = e.AddedItems.Count > 0;
+        }
+
+        private void OnStartButtonClick(object sender, RoutedEventArgs e)
+        {
+            var cameraId = (WebCameraId)comboBox.SelectedItem;
+            webCameraControl.StartCapture(cameraId);
+
+            stopButton.IsEnabled = true;
+            imageButton.IsEnabled = true;
+        }
+
+        private void OnStopButtonClick(object sender, RoutedEventArgs e)
+        {
+            webCameraControl.StopCapture();
+        }
+
+        private void OnImageButtonClick(object sender, RoutedEventArgs e)
+        {
+            webCameraView.Source = Convert(webCameraControl.GetCurrentImage());
+        }
+
+        public BitmapImage Convert(Bitmap src)
+        {
+            MemoryStream ms = new MemoryStream();
+            src.Save(ms, ImageFormat.Bmp);
+            BitmapImage image = new BitmapImage();
+            image.BeginInit();
+            ms.Seek(0, SeekOrigin.Begin);
+            image.StreamSource = ms;
+            image.EndInit();
+            return image;
         }
     }
 }
