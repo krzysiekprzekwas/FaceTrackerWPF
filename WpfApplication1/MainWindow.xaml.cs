@@ -11,7 +11,7 @@ using Emgu.CV;
 using Emgu.CV.UI;
 using Emgu.CV.Structure;
 using System.Windows.Forms.Integration;
-
+using System.Windows.Input;
 
 
 namespace FaceTracker
@@ -20,14 +20,18 @@ namespace FaceTracker
     {
         private Capture _capture;
 
-        private CascadeClassifier _cascadeClassifier;
+        private CascadeClassifier _cascadeFaceClassifier;
+        private CascadeClassifier _cascadeEyeClassifier;
+
 
         public MainWindow()
         {
             InitializeComponent();
             _capture = new Capture();
 
-            _cascadeClassifier = new CascadeClassifier("haarcascade_frontalface_alt_tree.xml");
+            _cascadeFaceClassifier = new CascadeClassifier("haarcascade_frontalface_alt_tree.xml");
+            _cascadeEyeClassifier = new CascadeClassifier("haarcascade_eye.xml");
+
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromMilliseconds(33);
             timer.Tick += timer_Tick;
@@ -44,11 +48,17 @@ namespace FaceTracker
                     if (imageFrame != null)
                     {
                         var grayframe = imageFrame.Convert<Gray, byte>();
-                        var faces = _cascadeClassifier.DetectMultiScale(grayframe, 1.1, 10, System.Drawing.Size.Empty); //the actual face detection happens here
+                        var faces = _cascadeFaceClassifier.DetectMultiScale(grayframe, 1.1, 10, System.Drawing.Size.Empty); //the actual face detection happens here
+                        var eyes = _cascadeEyeClassifier.DetectMultiScale(grayframe, 1.1, 10, System.Drawing.Size.Empty); //the actual face detection happens here
                         foreach (var face in faces)
                         {
                             imageFrame.Draw(face, new Bgr(Color.BurlyWood), 3); //the detected face(s) is highlighted here using a box that is drawn around it/them
-                           
+
+                        }
+                        foreach (var eye in eyes)
+                        {
+                            imageFrame.Draw(eye, new Bgr(Color.Blue), 3); //the detected face(s) is highlighted here using a box that is drawn around it/them
+
                         }
                     }
                     WebCameraView.Image = imageFrame;                    
@@ -60,7 +70,7 @@ namespace FaceTracker
                 WebCameraView.Image = _capture.QueryFrame();
             }
         }
-        
+
         
     }
 }
