@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using System.Runtime.InteropServices;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -15,10 +16,8 @@ using Color = System.Drawing.Color;
 
 namespace FaceTracker
 {
-
     public class FaceTrackViewModel : INotifyPropertyChanged
     {
-
         private BitmapSource _imageFrame = new BitmapImage();
 
         public BitmapSource ImageFrame
@@ -30,7 +29,7 @@ namespace FaceTracker
                 OnPropertyChanged();
             }
         }
-        
+
 
         private CascadeClassifier _cascadeFaceClassifier;
         private CascadeClassifier _cascadeEyeClassifier;
@@ -44,37 +43,33 @@ namespace FaceTracker
             _cascadeFaceClassifier = new CascadeClassifier("haarcascade_frontalface_alt_tree.xml");
             _cascadeEyeClassifier = new CascadeClassifier("haarcascade_eye.xml");
 
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromMilliseconds(500);
-            timer.Tick += timer_Tick;
-            timer.Start();
+            System.Windows.Forms.Application.Idle += timer_Tick;
         }
 
 
         public void timer_Tick(object a, EventArgs e)
         {
-                var tmp = _capture.QueryFrame().ToImage<Bgr, byte>();
+            var tmp = _capture.QueryFrame().ToImage<Bgr, byte>();
 
-                var _grayframe = tmp.Convert<Gray, byte>();
+            var _grayframe = tmp.Convert<Gray, byte>();
 
-                var faces = _cascadeFaceClassifier.DetectMultiScale(_grayframe, 1.1, 10,
-                    System.Drawing.Size.Empty); //the actual face detection happens here
-
-
-                foreach (var face in faces)
-                {
-                    tmp.Draw(face, new Bgr(Color.BurlyWood), 3);
-                }
+            var faces = _cascadeFaceClassifier.DetectMultiScale(_grayframe, 1.1, 10, System.Drawing.Size.Empty);
 
 
-                var eyes = _cascadeEyeClassifier.DetectMultiScale(_grayframe, 1.1, 10, System.Drawing.Size.Empty);
-                //the actual eye detection happens here
-                foreach (var eye in eyes)
-                {
-                    tmp.Draw(eye, new Bgr(Color.Blue), 3);
-                }
-                var tmpBmp = tmp.ToBitmap();
-                ImageFrame = Convert(tmpBmp);
+            foreach (var face in faces)
+            {
+                tmp.Draw(face, new Bgr(Color.BurlyWood), 3);
+            }
+
+
+            var eyes = _cascadeEyeClassifier.DetectMultiScale(_grayframe, 1.1, 10, System.Drawing.Size.Empty);
+
+            foreach (var eye in eyes)
+            {
+                tmp.Draw(eye, new Bgr(Color.Blue), 3);
+            }
+            var tmpBmp = tmp.ToBitmap();
+            ImageFrame = Convert(tmpBmp);
         }
 
         public static BitmapSource Convert(System.Drawing.Bitmap bitmap)

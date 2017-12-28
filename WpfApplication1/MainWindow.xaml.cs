@@ -15,6 +15,7 @@ using Emgu.CV.UI;
 using Emgu.CV.Structure;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
+using System.Windows.Interop;
 
 
 namespace FaceTracker
@@ -25,6 +26,8 @@ namespace FaceTracker
         public MainWindow()
         {
             InitializeComponent();
+
+            ComponentDispatcher.ThreadIdle += (sender, e) => System.Windows.Forms.Application.RaiseIdle(e);
         }
 
 
