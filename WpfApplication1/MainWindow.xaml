@@ -2,14 +2,19 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:wpf="clr-namespace:WebEye.Controls.Wpf;assembly=WebEye.Controls.Wpf.WebCameraControl"
+        xmlns:ui="clr-namespace:Emgu.CV.UI;assembly=Emgu.CV.UI"
         Title="MainWindow" Width="640" Height="480" MinWidth="400" MinHeight="250">
     <DockPanel Background="AliceBlue">
         <StackPanel Orientation="Vertical" DockPanel.Dock="Right" HorizontalAlignment="Center" Background="LightBlue">
-            <ComboBox x:Name="ComboBox" Width="120" DisplayMemberPath="Name" Margin="5,10,5,0" SelectionChanged="OnSelectionChanged" />
-            <Button x:Name="StartButton" Content="Start" Width="90" Margin="0,10,0,0" IsEnabled="False" Click="OnStartButtonClick" />
-            <Button x:Name="StopButton" Content="Stop" Width="90" Margin="0,10,0,0" IsEnabled="False" Click="OnStopButtonClick" />
-            <Button x:Name="ImageButton" Content="Image" Width="90" Margin="0,10,0,0" IsEnabled="False" Click="OnImageButtonClick" />
+            <StackPanel Orientation="Horizontal" >
+                <Label Content="Face detection"></Label>
+                <CheckBox x:Name="FaceDetectionCheckBox" VerticalAlignment="Center"/>
+            </StackPanel>
+            
         </StackPanel>
-        <Image x:Name="WebCameraView" />
+
+        <WindowsFormsHost>
+            <ui:ImageBox x:Name="WebCameraView" />
+        </WindowsFormsHost>
     </DockPanel>
 </Window>
