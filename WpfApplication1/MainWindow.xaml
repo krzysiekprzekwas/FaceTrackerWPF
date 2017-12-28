@@ -14,7 +14,8 @@
     <DockPanel Background="AliceBlue" >
         <StackPanel Orientation="Vertical" DockPanel.Dock="Right" HorizontalAlignment="Center" Background="LightBlue">
             <StackPanel Orientation="Horizontal" >
-                <Label x:Name="FrameRateLabel"  Content="Frame gen time: 0 ms" Width="140"></Label>
+                <Label x:Name="FrameRateLabel" Width="140" Content="{Binding  FrameGenerationTime, Mode=OneWay}" 
+                                                            ContentStringFormat="{}Frame gen time: {0} ms"></Label> 
             </StackPanel>
             <StackPanel Orientation="Horizontal" >
                 <Label Content="Face detection" Width="110"></Label>
@@ -30,6 +31,6 @@
             </StackPanel>
 
         </StackPanel>
-        <Image x:Name="WebCameraView"  Source="{Binding  ImageFrame, Mode=OneWay}"></Image>
+        <Image x:Name="WebCameraView"  Source="{Binding  ImageFrame, Mode=OneWay}" Margin="0,0,0,0.429"></Image>
     </DockPanel>
 </Window>

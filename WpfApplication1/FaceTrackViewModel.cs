@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -18,8 +19,18 @@ namespace FaceTracker
 {
     public class FaceTrackViewModel : INotifyPropertyChanged
     {
-        private BitmapSource _imageFrame = new BitmapImage();
+        private float _frameGenerationTime = 0;
+        public float FrameGenerationTime
+        {
+            get { return _frameGenerationTime; }
+            set
+            {
+                _frameGenerationTime = value;
+                OnPropertyChanged();
+            }
+        }
 
+        private BitmapSource _imageFrame = new BitmapImage();
         public BitmapSource ImageFrame
         {
             get { return _imageFrame; }
@@ -33,7 +44,7 @@ namespace FaceTracker
 
         private CascadeClassifier _cascadeFaceClassifier;
         private CascadeClassifier _cascadeEyeClassifier;
-
+        
         private Capture _capture;
 
         public FaceTrackViewModel()
@@ -49,6 +60,9 @@ namespace FaceTracker
 
         public void timer_Tick(object a, EventArgs e)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var tmp = _capture.QueryFrame().ToImage<Bgr, byte>();
 
             var _grayframe = tmp.Convert<Gray, byte>();
@@ -70,6 +84,10 @@ namespace FaceTracker
             }
             var tmpBmp = tmp.ToBitmap();
             ImageFrame = Convert(tmpBmp);
+
+            stopwatch.Stop();
+
+            FrameGenerationTime = stopwatch.ElapsedMilliseconds;
         }
 
         public static BitmapSource Convert(System.Drawing.Bitmap bitmap)
