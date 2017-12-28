@@ -40,37 +40,50 @@ namespace FaceTracker
 
         private void timer_Tick(object sender, EventArgs e)
         {
-            if (FaceDetectionCheckBox.IsChecked.Value)
+            using (var imageFrame = _capture.QueryFrame().ToImage<Bgr, byte>())
             {
 
-                using (var imageFrame = _capture.QueryFrame().ToImage<Bgr, byte>())
+                var grayframe = imageFrame.Convert<Gray, byte>();
+
+                if (FaceDetectionCheckBox.IsChecked != null && FaceDetectionCheckBox.IsChecked.Value)
                 {
-                    if (imageFrame != null)
+
+                    var faces = _cascadeFaceClassifier.DetectMultiScale(grayframe, 1.1, 10, System.Drawing.Size.Empty); //the actual face detection happens here
+
+                    foreach (var face in faces)
                     {
-                        var grayframe = imageFrame.Convert<Gray, byte>();
-                        var faces = _cascadeFaceClassifier.DetectMultiScale(grayframe, 1.1, 10, System.Drawing.Size.Empty); //the actual face detection happens here
-                        var eyes = _cascadeEyeClassifier.DetectMultiScale(grayframe, 1.1, 10, System.Drawing.Size.Empty); //the actual face detection happens here
-                        foreach (var face in faces)
-                        {
-                            imageFrame.Draw(face, new Bgr(Color.BurlyWood), 3); //the detected face(s) is highlighted here using a box that is drawn around it/them
+                        imageFrame.Draw(face, new Bgr(Color.BurlyWood), 3);
 
-                        }
-                        foreach (var eye in eyes)
-                        {
-                            imageFrame.Draw(eye, new Bgr(Color.Blue), 3); //the detected face(s) is highlighted here using a box that is drawn around it/them
-
-                        }
                     }
-                    WebCameraView.Image = imageFrame;                    
+
                 }
-                
-            }
-            else
-            {
-                WebCameraView.Image = _capture.QueryFrame();
+
+                if (EyeDetectionCheckBox.IsChecked != null && EyeDetectionCheckBox.IsChecked.Value)
+                {
+                    var eyes = _cascadeEyeClassifier.DetectMultiScale(grayframe, 1.1, 10, System.Drawing.Size.Empty); //the actual eye detection happens here
+                    foreach (var eye in eyes)
+                    {
+                        imageFrame.Draw(eye, new Bgr(Color.Blue), 3);
+
+                    }
+                }
+
+                WebCameraView.Image = imageFrame;
             }
         }
 
-        
+
+        private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.F:
+                    FaceDetectionCheckBox.IsChecked = FaceDetectionCheckBox.IsChecked != null && !FaceDetectionCheckBox.IsChecked.Value;
+                    break;
+                case Key.E:
+                    EyeDetectionCheckBox.IsChecked = EyeDetectionCheckBox.IsChecked != null && !EyeDetectionCheckBox.IsChecked.Value;
+                    break;
+            }
+        }
     }
 }

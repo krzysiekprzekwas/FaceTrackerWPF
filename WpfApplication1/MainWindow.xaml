@@ -3,14 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:wpf="clr-namespace:WebEye.Controls.Wpf;assembly=WebEye.Controls.Wpf.WebCameraControl"
         xmlns:ui="clr-namespace:Emgu.CV.UI;assembly=Emgu.CV.UI"
-        Title="MainWindow" Width="640" Height="480" MinWidth="400" MinHeight="250">
+        Title="MainWindow" Width="640" Height="480" MinWidth="400" MinHeight="250" 
+        KeyDown="MainWindow_OnKeyDown">
     <DockPanel Background="AliceBlue">
         <StackPanel Orientation="Vertical" DockPanel.Dock="Right" HorizontalAlignment="Center" Background="LightBlue">
             <StackPanel Orientation="Horizontal" >
-                <Label Content="Face detection"></Label>
+                <Label Content="Face detection" Width="90"></Label>
                 <CheckBox x:Name="FaceDetectionCheckBox" VerticalAlignment="Center"/>
             </StackPanel>
-            
+            <StackPanel Orientation="Horizontal" >
+                <Label Content="Eye detection" Width="90"></Label>
+                <CheckBox x:Name="EyeDetectionCheckBox" VerticalAlignment="Center"/>
+            </StackPanel>
+
         </StackPanel>
 
         <WindowsFormsHost>
