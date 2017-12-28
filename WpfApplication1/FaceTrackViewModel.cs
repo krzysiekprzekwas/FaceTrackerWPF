@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -19,7 +20,7 @@ namespace FaceTracker
 {
     public class FaceTrackViewModel : INotifyPropertyChanged
     {
-        private float _frameGenerationTime = 0;
+        private float _frameGenerationTime;
         public float FrameGenerationTime
         {
             get { return _frameGenerationTime; }
@@ -41,10 +42,31 @@ namespace FaceTracker
             }
         }
 
+        private bool _faceDetectionEnabled;
+        public bool FaceDetectionEnabled
+        {
+            get { return _faceDetectionEnabled; }
+            set
+            {
+                _faceDetectionEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _eyeDetectionEnabled;
+        public bool EyeDetectionEnabled
+        {
+            get { return _eyeDetectionEnabled; }
+            set
+            {
+                _eyeDetectionEnabled = value;
+                OnPropertyChanged();
+            }
+        }
 
         private CascadeClassifier _cascadeFaceClassifier;
         private CascadeClassifier _cascadeEyeClassifier;
-        
+        private Image<Gray, byte> _grayFrame;
         private Capture _capture;
 
         public FaceTrackViewModel()
@@ -65,23 +87,26 @@ namespace FaceTracker
 
             var tmp = _capture.QueryFrame().ToImage<Bgr, byte>();
 
-            var _grayframe = tmp.Convert<Gray, byte>();
+            _grayFrame = tmp.Convert<Gray, byte>();
 
-            var faces = _cascadeFaceClassifier.DetectMultiScale(_grayframe, 1.1, 10, System.Drawing.Size.Empty);
-
+            Rectangle[] faces = {};
+            if (FaceDetectionEnabled)
+                 faces = _cascadeFaceClassifier.DetectMultiScale(_grayFrame, 1.1, 10, System.Drawing.Size.Empty);
 
             foreach (var face in faces)
             {
                 tmp.Draw(face, new Bgr(Color.BurlyWood), 3);
             }
 
-
-            var eyes = _cascadeEyeClassifier.DetectMultiScale(_grayframe, 1.1, 10, System.Drawing.Size.Empty);
+            Rectangle[] eyes = {};
+            if (EyeDetectionEnabled)
+                eyes = _cascadeEyeClassifier.DetectMultiScale(_grayFrame, 1.1, 10, System.Drawing.Size.Empty);
 
             foreach (var eye in eyes)
             {
                 tmp.Draw(eye, new Bgr(Color.Blue), 3);
             }
+
             var tmpBmp = tmp.ToBitmap();
             ImageFrame = Convert(tmpBmp);
 

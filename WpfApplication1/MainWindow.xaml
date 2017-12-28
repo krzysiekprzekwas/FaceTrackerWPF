@@ -19,11 +19,11 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal" >
                 <Label Content="Face detection" Width="110"></Label>
-                <CheckBox x:Name="FaceDetectionCheckBox" IsChecked="True" VerticalAlignment="Center"/>
+                <CheckBox x:Name="FaceDetectionCheckBox" IsChecked="{Binding FaceDetectionEnabled, Mode=TwoWay}" VerticalAlignment="Center"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" >
                 <Label Content="Eye detection" Width="110"></Label>
-                <CheckBox x:Name="EyeDetectionCheckBox" IsChecked="True" VerticalAlignment="Center"/>
+                <CheckBox x:Name="EyeDetectionCheckBox" IsChecked="{Binding EyeDetectionEnabled, Mode=TwoWay}" VerticalAlignment="Center"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" >
                 <Label Content="Show grayscaled" Width="110"></Label>
