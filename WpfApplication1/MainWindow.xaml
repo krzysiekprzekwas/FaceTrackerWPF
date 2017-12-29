@@ -26,7 +26,7 @@
                 <CheckBox x:Name="EyeDetectionCheckBox" IsChecked="{Binding EyeDetectionEnabled, Mode=TwoWay}" VerticalAlignment="Center"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" >
-                <wpfTool:DecimalUpDown Value="{Binding ScaleFactor, Mode=OneWay}" FormatString="F2" Height="25" Width="125" Margin="5,2,2,2"
+                <wpfTool:DecimalUpDown Value="{Binding ScaleFactor, Mode=TwoWay}" FormatString="F2" Height="25" Width="125" Margin="5,2,2,2"
                     Increment="0.01" Maximum="1000"/>  
             </StackPanel>
 

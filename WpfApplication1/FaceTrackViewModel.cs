@@ -100,7 +100,7 @@ namespace FaceTracker
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var tmp = _capture.QueryFrame().ToImage<Bgr, byte>();
+            var tmp = _capture.QueryFrame().ToImage<Bgr, byte>().Resize(ScaleFactor,Emgu.CV.CvEnum.Inter.Area);
 
             _grayFrame = tmp.Convert<Gray, byte>();
 
