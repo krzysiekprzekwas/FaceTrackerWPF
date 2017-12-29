@@ -20,6 +20,8 @@ namespace FaceTracker
 {
     public class FaceTrackViewModel : INotifyPropertyChanged
     {
+
+
         private float _frameGenerationTime;
         public float FrameGenerationTime
         {

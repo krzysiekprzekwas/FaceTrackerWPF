@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -42,6 +43,17 @@ namespace FaceTracker
                     EyeDetectionCheckBox.IsChecked = !EyeDetectionCheckBox.IsChecked.Value;
                     break;
             }
+        }
+
+        private new void PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !IsTextAllowed(e.Text);
+        }
+
+        private static bool IsTextAllowed(string text)
+        {
+            Regex regex = new Regex("(\\d*\\.)?\\d+"); 
+            return !regex.IsMatch(text);
         }
     }
 }
