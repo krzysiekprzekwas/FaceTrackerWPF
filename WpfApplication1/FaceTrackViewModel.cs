@@ -21,6 +21,17 @@ namespace FaceTracker
     public class FaceTrackViewModel : INotifyPropertyChanged
     {
 
+        private double _scaleFactor;
+        public double ScaleFactor
+        {
+            get { return _scaleFactor; }
+            set
+            {
+                _scaleFactor = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         private float _frameGenerationTime;
         public float FrameGenerationTime
@@ -77,6 +88,8 @@ namespace FaceTracker
 
             _cascadeFaceClassifier = new CascadeClassifier("haarcascade_frontalface_alt_tree.xml");
             _cascadeEyeClassifier = new CascadeClassifier("haarcascade_eye.xml");
+
+            ScaleFactor = 1.0;
 
             System.Windows.Forms.Application.Idle += timer_Tick;
         }
