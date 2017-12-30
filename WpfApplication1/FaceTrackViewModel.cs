@@ -108,6 +108,7 @@ namespace FaceTracker
         }
 
 
+
         public void timer_Tick(object a, EventArgs e)
         {
             var stopwatch = new Stopwatch();
@@ -116,7 +117,7 @@ namespace FaceTracker
             var frame = _capture.QueryFrame().ToImage<Bgr, byte>(); 
             var tmp = frame.Resize(ScaleFactor,Emgu.CV.CvEnum.Inter.Area);
 
-            var grayFrame = MakeGrayscale3(tmp.Bitmap);
+            var grayFrame = ConvertToGrayscale(tmp.Bitmap);
 
             Rectangle[] faces = {};
             if (FaceDetectionEnabled)
@@ -153,7 +154,7 @@ namespace FaceTracker
             FrameGenerationTime = stopwatch.ElapsedMilliseconds;
         }
 
-        public static Image<Bgr, byte> MakeGrayscale3(Bitmap original)
+        public static Image<Bgr, byte> ConvertToGrayscale(Bitmap original)
         {
             //create a blank bitmap the same size as original
             Bitmap newBitmap = new Bitmap(original.Width, original.Height);
@@ -203,26 +204,7 @@ namespace FaceTracker
             bitmap.UnlockBits(bitmapData);
             return bitmapSource;
         }
-
-        Bitmap GetBitmap(BitmapSource source)
-        {
-            Bitmap bmp = new Bitmap(
-              source.PixelWidth,
-              source.PixelHeight,
-              System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-            BitmapData data = bmp.LockBits(
-              new Rectangle(System.Drawing.Point.Empty, bmp.Size),
-              ImageLockMode.WriteOnly,
-              System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-            source.CopyPixels(
-              Int32Rect.Empty,
-              data.Scan0,
-              data.Height * data.Stride,
-              data.Stride);
-            bmp.UnlockBits(data);
-            return bmp;
-        }
-
+        
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
