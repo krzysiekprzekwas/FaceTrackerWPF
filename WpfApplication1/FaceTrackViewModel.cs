@@ -98,6 +98,9 @@ namespace FaceTracker
         }
 
         private Capture _capture;
+        private int ROIOffset = 30;
+
+        private Rectangle previousFacePosition;
 
         public FaceTrackViewModel()
         {
@@ -106,7 +109,7 @@ namespace FaceTracker
             _cascadeFaceClassifier = new CascadeClassifier("haarcascade_frontalface_alt_tree.xml");
             _cascadeEyeClassifier = new CascadeClassifier("haarcascade_eye.xml");
 
-            ScaleFactor = 1.0;
+            ScaleFactor = 0.5;
 
             _capture.Start();
 
@@ -125,7 +128,6 @@ namespace FaceTracker
             FrameGenerationTime = stopwatch.ElapsedMilliseconds;
         }
 
-
         public void PerformFaceDetection()
         {
             var frame = _capture.QueryFrame().ToImage<Bgr, byte>();
@@ -136,14 +138,22 @@ namespace FaceTracker
             Rectangle[] faces = {};
             if (FaceDetectionEnabled)
                 faces = _cascadeFaceClassifier.DetectMultiScale(grayFrame, 1.1, 10, System.Drawing.Size.Empty);
+            
 
             foreach (var face in faces)
             {
-                frame.Draw(new Rectangle((int) (face.X / ScaleFactor),
-                        (int) (face.Y / ScaleFactor),
-                        (int) (face.Width / ScaleFactor),
-                        (int) (face.Height / ScaleFactor)),
+                frame.Draw(new Rectangle((int)(face.X / ScaleFactor),
+                        (int)(face.Y / ScaleFactor),
+                        (int)(face.Width / ScaleFactor),
+                        (int)(face.Height / ScaleFactor)),
                     new Bgr(Color.BurlyWood), 3);
+
+                previousFacePosition = new Rectangle((int) (face.X / ScaleFactor - ROIOffset),
+                    (int) (face.Y / ScaleFactor - ROIOffset),
+                    (int) (face.Width / ScaleFactor + ROIOffset * 2),
+                    (int) (face.Height / ScaleFactor + ROIOffset * 2));
+
+                frame.Draw( previousFacePosition, new Bgr(Color.Chartreuse), 3);
             }
 
             Rectangle[] eyes = {};
