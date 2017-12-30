@@ -22,9 +22,10 @@ namespace FaceTracker
 {
     public class FaceTrackViewModel : INotifyPropertyChanged
     {
-
         private double _scaleFactor;
-        public double ScaleFactor{
+
+        public double ScaleFactor
+        {
             get { return _scaleFactor; }
             set
             {
@@ -34,6 +35,7 @@ namespace FaceTracker
         }
 
         private float _frameGenerationTime;
+
         public float FrameGenerationTime
         {
             get { return _frameGenerationTime; }
@@ -45,6 +47,7 @@ namespace FaceTracker
         }
 
         private BitmapSource _imageFrame = new BitmapImage();
+
         public BitmapSource ImageFrame
         {
             get { return _imageFrame; }
@@ -56,6 +59,7 @@ namespace FaceTracker
         }
 
         private bool _faceDetectionEnabled;
+
         public bool FaceDetectionEnabled
         {
             get { return _faceDetectionEnabled; }
@@ -67,6 +71,7 @@ namespace FaceTracker
         }
 
         private bool _eyeDetectionEnabled;
+
         public bool EyeDetectionEnabled
         {
             get { return _eyeDetectionEnabled; }
@@ -81,6 +86,7 @@ namespace FaceTracker
         private CascadeClassifier _cascadeEyeClassifier;
 
         private BitmapSource _postProcessedFrame;
+
         public BitmapSource PostProcessedFrame
         {
             get { return _postProcessedFrame; }
@@ -103,33 +109,41 @@ namespace FaceTracker
             ScaleFactor = 1.0;
 
             _capture.Start();
-            
-            System.Windows.Forms.Application.Idle += timer_Tick;
+
+            System.Windows.Forms.Application.Idle += ProcessFrame;
         }
 
-
-
-        public void timer_Tick(object a, EventArgs e)
+        public void ProcessFrame(object a, EventArgs e)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var frame = _capture.QueryFrame().ToImage<Bgr, byte>(); 
-            var tmp = frame.Resize(ScaleFactor,Emgu.CV.CvEnum.Inter.Area);
+            PerformFaceDetection();
+
+            stopwatch.Stop();
+
+            FrameGenerationTime = stopwatch.ElapsedMilliseconds;
+        }
+
+
+        public void PerformFaceDetection()
+        {
+            var frame = _capture.QueryFrame().ToImage<Bgr, byte>();
+            var tmp = frame.Resize(ScaleFactor, Emgu.CV.CvEnum.Inter.Area);
 
             var grayFrame = ConvertToGrayscale(tmp.Bitmap);
 
             Rectangle[] faces = {};
             if (FaceDetectionEnabled)
-                 faces = _cascadeFaceClassifier.DetectMultiScale(grayFrame, 1.1, 10, System.Drawing.Size.Empty);
+                faces = _cascadeFaceClassifier.DetectMultiScale(grayFrame, 1.1, 10, System.Drawing.Size.Empty);
 
             foreach (var face in faces)
             {
-                frame.Draw(new Rectangle((int)(face.X / ScaleFactor ), 
-                                         (int)(face.Y / ScaleFactor), 
-                                         (int)(face.Width / ScaleFactor), 
-                                         (int)(face.Height /ScaleFactor)),
-                                         new Bgr(Color.BurlyWood), 3);
+                frame.Draw(new Rectangle((int) (face.X / ScaleFactor),
+                        (int) (face.Y / ScaleFactor),
+                        (int) (face.Width / ScaleFactor),
+                        (int) (face.Height / ScaleFactor)),
+                    new Bgr(Color.BurlyWood), 3);
             }
 
             Rectangle[] eyes = {};
@@ -138,20 +152,16 @@ namespace FaceTracker
 
             foreach (var eye in eyes)
             {
-                frame.Draw(new Rectangle((int)( eye.X / ScaleFactor),
-                                        (int)(eye.Y / ScaleFactor),
-                                        (int)(eye.Width / ScaleFactor),
-                                        (int)(eye.Height / ScaleFactor)), 
-                                        new Bgr(Color.Blue), 3);
+                frame.Draw(new Rectangle((int) (eye.X / ScaleFactor),
+                        (int) (eye.Y / ScaleFactor),
+                        (int) (eye.Width / ScaleFactor),
+                        (int) (eye.Height / ScaleFactor)),
+                    new Bgr(Color.Blue), 3);
             }
-            
+
             ImageFrame = Convert(frame.ToBitmap());
-            
+
             PostProcessedFrame = Convert(grayFrame.ToBitmap());
-
-            stopwatch.Stop();
-
-            FrameGenerationTime = stopwatch.ElapsedMilliseconds;
         }
 
         public static Image<Bgr, byte> ConvertToGrayscale(Bitmap original)
@@ -164,14 +174,14 @@ namespace FaceTracker
 
             //create the grayscale ColorMatrix
             ColorMatrix colorMatrix = new ColorMatrix(
-               new float[][]
-               {
-         new float[] {.3f, .3f, .3f, 0, 0},
-         new float[] {.59f, .59f, .59f, 0, 0},
-         new float[] {.11f, .11f, .11f, 0, 0},
-         new float[] {0, 0, 0, 1, 0},
-         new float[] {0, 0, 0, 0, 1}
-               });
+                new float[][]
+                {
+                    new float[] {.3f, .3f, .3f, 0, 0},
+                    new float[] {.59f, .59f, .59f, 0, 0},
+                    new float[] {.11f, .11f, .11f, 0, 0},
+                    new float[] {0, 0, 0, 1, 0},
+                    new float[] {0, 0, 0, 0, 1}
+                });
 
             //create some image attributes
             ImageAttributes attributes = new ImageAttributes();
@@ -182,7 +192,7 @@ namespace FaceTracker
             //draw the original image on the new image
             //using the grayscale color matrix
             g.DrawImage(original, new Rectangle(0, 0, original.Width, original.Height),
-               0, 0, original.Width, original.Height, GraphicsUnit.Pixel, attributes);
+                0, 0, original.Width, original.Height, GraphicsUnit.Pixel, attributes);
 
             //dispose the Graphics object
             g.Dispose();
@@ -204,7 +214,7 @@ namespace FaceTracker
             bitmap.UnlockBits(bitmapData);
             return bitmapSource;
         }
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
