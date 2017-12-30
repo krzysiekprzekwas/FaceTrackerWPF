@@ -75,6 +75,17 @@ namespace FaceTracker
             }
         }
 
+        private bool _histogramEqualizationEnabled; 
+        public bool HistogramEqualizationEnabled
+        {
+            get { return _histogramEqualizationEnabled; }
+            set
+            {
+                _histogramEqualizationEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+
         private readonly CascadeClassifier _cascadeFaceClassifier;
         private readonly CascadeClassifier _cascadeEyeClassifier;
 
@@ -121,13 +132,31 @@ namespace FaceTracker
             FrameGenerationTime = stopwatch.ElapsedMilliseconds;
         }
 
+        private Emgu.CV.Image<Gray, byte> EqualizeHistogram(Emgu.CV.Image<Gray,byte> image)
+        {
+            // Convert a BGR image to HLS range
+            var imageHsi = new Image<Hls, byte>(image.Bitmap);
+
+            // Equalize the Intensity Channel
+            var equalized = imageHsi[1];
+            equalized._EqualizeHist();
+
+            // Convert the image back to BGR range
+            return equalized.Convert<Gray, byte>();
+        }
+
         public void PerformFaceDetection()
         {
             var frame = _capture.QueryFrame().ToImage<Bgr, byte>();
 
+
             var grayFrame = frame.Resize(ScaleFactor, 
                                         Emgu.CV.CvEnum.Inter.Area)
                                         .Convert<Gray, byte>();
+
+
+            if (HistogramEqualizationEnabled)
+                grayFrame = EqualizeHistogram(grayFrame);
 
             Rectangle[] faces = {};
             if (FaceDetectionEnabled)
