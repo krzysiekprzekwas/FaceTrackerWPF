@@ -1,22 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
+using System.IO;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Emgu.CV;
 using Emgu.CV.Structure;
-using System.Runtime.InteropServices;
-using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using Color = System.Drawing.Color;
-using PixelFormat = System.Windows.Media.PixelFormat;
 
 namespace FaceTracker
 {
@@ -82,8 +75,8 @@ namespace FaceTracker
             }
         }
 
-        private CascadeClassifier _cascadeFaceClassifier;
-        private CascadeClassifier _cascadeEyeClassifier;
+        private readonly CascadeClassifier _cascadeFaceClassifier;
+        private readonly CascadeClassifier _cascadeEyeClassifier;
 
         private BitmapSource _postProcessedFrame;
 
@@ -97,10 +90,10 @@ namespace FaceTracker
             }
         }
 
-        private Capture _capture;
-        private int ROIOffset = 30;
+        private readonly Capture _capture;
+        private const int ROIOffset = 30;
 
-        private Rectangle previousFacePosition;
+        private Rectangle _previousFacePosition;
 
         public FaceTrackViewModel()
         {
@@ -131,13 +124,14 @@ namespace FaceTracker
         public void PerformFaceDetection()
         {
             var frame = _capture.QueryFrame().ToImage<Bgr, byte>();
-            var tmp = frame.Resize(ScaleFactor, Emgu.CV.CvEnum.Inter.Area);
 
-            var grayFrame = ConvertToGrayscale(tmp.Bitmap);
+            var grayFrame = frame.Resize(ScaleFactor, 
+                                        Emgu.CV.CvEnum.Inter.Area)
+                                        .Convert<Gray, byte>();
 
             Rectangle[] faces = {};
             if (FaceDetectionEnabled)
-                faces = _cascadeFaceClassifier.DetectMultiScale(grayFrame, 1.1, 10, System.Drawing.Size.Empty);
+                faces = _cascadeFaceClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
             
 
             foreach (var face in faces)
@@ -148,17 +142,17 @@ namespace FaceTracker
                         (int)(face.Height / ScaleFactor)),
                     new Bgr(Color.BurlyWood), 3);
 
-                previousFacePosition = new Rectangle((int) (face.X / ScaleFactor - ROIOffset),
+                _previousFacePosition = new Rectangle((int) (face.X / ScaleFactor - ROIOffset),
                     (int) (face.Y / ScaleFactor - ROIOffset),
                     (int) (face.Width / ScaleFactor + ROIOffset * 2),
                     (int) (face.Height / ScaleFactor + ROIOffset * 2));
 
-                frame.Draw( previousFacePosition, new Bgr(Color.Chartreuse), 3);
+                frame.Draw( _previousFacePosition, new Bgr(Color.Chartreuse), 3);
             }
 
             Rectangle[] eyes = {};
             if (EyeDetectionEnabled)
-                eyes = _cascadeEyeClassifier.DetectMultiScale(grayFrame, 1.1, 10, System.Drawing.Size.Empty);
+                eyes = _cascadeEyeClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
 
             foreach (var eye in eyes)
             {
@@ -209,22 +203,17 @@ namespace FaceTracker
             return new Image<Bgr, byte>(newBitmap);
         }
 
-        public static BitmapSource Convert(Bitmap bitmap)
+        public BitmapImage Convert(Bitmap src)
         {
-            var bitmapData = bitmap.LockBits(
-                new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                ImageLockMode.ReadOnly, bitmap.PixelFormat);
-
-            var bitmapSource = BitmapSource.Create(
-                bitmapData.Width, bitmapData.Height,
-                bitmap.HorizontalResolution, bitmap.VerticalResolution,
-                PixelFormats.Bgr24, null,
-                bitmapData.Scan0, bitmapData.Stride * bitmapData.Height, bitmapData.Stride);
-
-            bitmap.UnlockBits(bitmapData);
-            return bitmapSource;
+            var ms = new MemoryStream();
+            src.Save(ms, ImageFormat.Bmp);
+            var image = new BitmapImage();
+            image.BeginInit();
+            ms.Seek(0, SeekOrigin.Begin);
+            image.StreamSource = ms;
+            image.EndInit();
+            return image;
         }
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
