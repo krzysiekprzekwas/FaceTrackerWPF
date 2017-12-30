@@ -10,9 +10,15 @@
     <Window.DataContext>
         <VM:FaceTrackViewModel/>
     </Window.DataContext>
-    
-    <DockPanel Background="AliceBlue" >
-        <StackPanel Orientation="Vertical" DockPanel.Dock="Right" HorizontalAlignment="Center" Background="LightBlue">
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="140" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="3" Orientation="Vertical" HorizontalAlignment="Center" Background="LightBlue">
             <StackPanel Orientation="Horizontal" >
                 <Label x:Name="FrameRateLabel" Width="140" Content="{Binding  FrameGenerationTime, Mode=OneWay}" 
                                                             ContentStringFormat="{}Frame gen time: {0} ms"></Label> 
@@ -29,10 +35,10 @@
                 <wpfTool:DecimalUpDown Value="{Binding ScaleFactor, Mode=TwoWay}" FormatString="F2" Height="25" Width="125" Margin="5,2,2,2"
                     Increment="0.01" Maximum="1" Minimum="0.01"/>  
             </StackPanel>
-            <Label Content="PostProcessed image"/>
-            <Image Width="130" Height="130" Source="{Binding PostProcessedFrame , Mode=OneWay}"/>
 
         </StackPanel>
-        <Image x:Name="WebCameraView"  Source="{Binding ImageFrame , Mode=OneWay}"/>
-    </DockPanel>
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+        <Image Grid.Column="2" Source="{Binding PostProcessedFrame , Mode=OneWay}"/>
+        <Image Grid.Column="0" Source="{Binding ImageFrame , Mode=OneWay}"/>
+    </Grid>
 </Window>

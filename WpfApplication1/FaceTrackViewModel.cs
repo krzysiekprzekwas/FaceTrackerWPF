@@ -115,32 +115,40 @@ namespace FaceTracker
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var tmp = _capture.QueryFrame().ToImage<Bgr, byte>().Resize(ScaleFactor,Emgu.CV.CvEnum.Inter.Area);
+            var frame = _capture.QueryFrame().ToImage<Bgr, byte>(); 
+            var tmp = frame.Resize(ScaleFactor,Emgu.CV.CvEnum.Inter.Area);
 
-            var _grayFrame = MakeGrayscale3(tmp.Bitmap);
+            var grayFrame = MakeGrayscale3(tmp.Bitmap);
 
             Rectangle[] faces = {};
             if (FaceDetectionEnabled)
-                 faces = _cascadeFaceClassifier.DetectMultiScale(_grayFrame, 1.1, 10, System.Drawing.Size.Empty);
+                 faces = _cascadeFaceClassifier.DetectMultiScale(grayFrame, 1.1, 10, System.Drawing.Size.Empty);
 
             foreach (var face in faces)
             {
-                tmp.Draw(face, new Bgr(Color.BurlyWood), 3);
+                frame.Draw(new Rectangle((int)(face.X / ScaleFactor ), 
+                                         (int)(face.Y / ScaleFactor), 
+                                         (int)(face.Width / ScaleFactor), 
+                                         (int)(face.Height /ScaleFactor)),
+                                         new Bgr(Color.BurlyWood), 3);
             }
 
             Rectangle[] eyes = {};
             if (EyeDetectionEnabled)
-                eyes = _cascadeEyeClassifier.DetectMultiScale(_grayFrame, 1.1, 10, System.Drawing.Size.Empty);
+                eyes = _cascadeEyeClassifier.DetectMultiScale(grayFrame, 1.1, 10, System.Drawing.Size.Empty);
 
             foreach (var eye in eyes)
             {
-                tmp.Draw(eye, new Bgr(Color.Blue), 3);
+                frame.Draw(new Rectangle((int)( eye.X / ScaleFactor),
+                                        (int)(eye.Y / ScaleFactor),
+                                        (int)(eye.Width / ScaleFactor),
+                                        (int)(eye.Height / ScaleFactor)), 
+                                        new Bgr(Color.Blue), 3);
             }
-
-            var tmpBmp = tmp.ToBitmap();
-            ImageFrame = Convert(tmpBmp);
             
-            PostProcessedFrame = Convert(_grayFrame.ToBitmap());
+            ImageFrame = Convert(frame.ToBitmap());
+            
+            PostProcessedFrame = Convert(grayFrame.ToBitmap());
 
             stopwatch.Stop();
 
