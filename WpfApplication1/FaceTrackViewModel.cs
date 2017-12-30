@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -15,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Color = System.Drawing.Color;
+using PixelFormat = System.Windows.Media.PixelFormat;
 
 namespace FaceTracker
 {
@@ -79,7 +81,18 @@ namespace FaceTracker
 
         private CascadeClassifier _cascadeFaceClassifier;
         private CascadeClassifier _cascadeEyeClassifier;
-        private Image<Gray, byte> _grayFrame;
+
+        private BitmapSource _postProcessedFrame;
+        public BitmapSource PostProcessedFrame
+        {
+            get { return _postProcessedFrame; }
+            set
+            {
+                _postProcessedFrame = value;
+                OnPropertyChanged();
+            }
+        }
+
         private Capture _capture;
 
         public FaceTrackViewModel()
@@ -91,6 +104,8 @@ namespace FaceTracker
 
             ScaleFactor = 1.0;
 
+            _capture.Start();
+            
             System.Windows.Forms.Application.Idle += timer_Tick;
         }
 
@@ -102,7 +117,7 @@ namespace FaceTracker
 
             var tmp = _capture.QueryFrame().ToImage<Bgr, byte>().Resize(ScaleFactor,Emgu.CV.CvEnum.Inter.Area);
 
-            _grayFrame = tmp.Convert<Gray, byte>();
+            var _grayFrame = MakeGrayscale3(tmp.Bitmap);
 
             Rectangle[] faces = {};
             if (FaceDetectionEnabled)
@@ -124,17 +139,54 @@ namespace FaceTracker
 
             var tmpBmp = tmp.ToBitmap();
             ImageFrame = Convert(tmpBmp);
+            
+            PostProcessedFrame = Convert(_grayFrame.ToBitmap());
 
             stopwatch.Stop();
 
             FrameGenerationTime = stopwatch.ElapsedMilliseconds;
         }
 
-        public static BitmapSource Convert(System.Drawing.Bitmap bitmap)
+        public static Image<Bgr, byte> MakeGrayscale3(Bitmap original)
+        {
+            //create a blank bitmap the same size as original
+            Bitmap newBitmap = new Bitmap(original.Width, original.Height);
+
+            //get a graphics object from the new image
+            Graphics g = Graphics.FromImage(newBitmap);
+
+            //create the grayscale ColorMatrix
+            ColorMatrix colorMatrix = new ColorMatrix(
+               new float[][]
+               {
+         new float[] {.3f, .3f, .3f, 0, 0},
+         new float[] {.59f, .59f, .59f, 0, 0},
+         new float[] {.11f, .11f, .11f, 0, 0},
+         new float[] {0, 0, 0, 1, 0},
+         new float[] {0, 0, 0, 0, 1}
+               });
+
+            //create some image attributes
+            ImageAttributes attributes = new ImageAttributes();
+
+            //set the color matrix attribute
+            attributes.SetColorMatrix(colorMatrix);
+
+            //draw the original image on the new image
+            //using the grayscale color matrix
+            g.DrawImage(original, new Rectangle(0, 0, original.Width, original.Height),
+               0, 0, original.Width, original.Height, GraphicsUnit.Pixel, attributes);
+
+            //dispose the Graphics object
+            g.Dispose();
+            return new Image<Bgr, byte>(newBitmap);
+        }
+
+        public static BitmapSource Convert(Bitmap bitmap)
         {
             var bitmapData = bitmap.LockBits(
-                new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                System.Drawing.Imaging.ImageLockMode.ReadOnly, bitmap.PixelFormat);
+                new Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
             var bitmapSource = BitmapSource.Create(
                 bitmapData.Width, bitmapData.Height,
@@ -144,6 +196,25 @@ namespace FaceTracker
 
             bitmap.UnlockBits(bitmapData);
             return bitmapSource;
+        }
+
+        Bitmap GetBitmap(BitmapSource source)
+        {
+            Bitmap bmp = new Bitmap(
+              source.PixelWidth,
+              source.PixelHeight,
+              System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            BitmapData data = bmp.LockBits(
+              new Rectangle(System.Drawing.Point.Empty, bmp.Size),
+              ImageLockMode.WriteOnly,
+              System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            source.CopyPixels(
+              Int32Rect.Empty,
+              data.Scan0,
+              data.Height * data.Stride,
+              data.Stride);
+            bmp.UnlockBits(data);
+            return bmp;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
