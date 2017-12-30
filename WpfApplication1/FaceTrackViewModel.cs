@@ -24,8 +24,7 @@ namespace FaceTracker
     {
 
         private double _scaleFactor;
-        public double ScaleFactor
-        {
+        public double ScaleFactor{
             get { return _scaleFactor; }
             set
             {
@@ -33,7 +32,6 @@ namespace FaceTracker
                 OnPropertyChanged();
             }
         }
-
 
         private float _frameGenerationTime;
         public float FrameGenerationTime
