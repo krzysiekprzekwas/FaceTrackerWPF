@@ -9,6 +9,7 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using OpenTK.Graphics.OpenGL;
 using Color = System.Drawing.Color;
@@ -135,7 +136,7 @@ namespace FaceTracker
             FrameGenerationTime = stopwatch.ElapsedMilliseconds;
         }
 
-        private Emgu.CV.Image<Gray, byte> EqualizeHistogram(Emgu.CV.Image<Gray,byte> image)
+        private Image<Gray, byte> EqualizeHistogram(Emgu.CV.Image<Gray,byte> image)
         {
             // Convert a BGR image to HLS range
             var imageHsi = new Image<Hls, byte>(image.Bitmap);
@@ -165,6 +166,9 @@ namespace FaceTracker
             if (FaceDetectionEnabled)
                 faces = _cascadeFaceClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
 
+            Rectangle[] eyes = { };
+            if (EyeDetectionEnabled)
+                eyes = _cascadeEyeClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
 
             foreach (var face in faces)
             {
@@ -183,9 +187,6 @@ namespace FaceTracker
                 frame.Draw( _previousFacePosition, new Bgr(Color.Chartreuse), 3);
             }
 
-            Rectangle[] eyes = {};
-            if (EyeDetectionEnabled)
-                eyes = _cascadeEyeClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
 
             foreach (var eye in eyes)
             {
@@ -196,27 +197,33 @@ namespace FaceTracker
                     new Bgr(Color.Blue), 3);
             }
 
-            var editableGrayFrame = MarkAngles(grayFrame);
+            var editableGrayFrame = MarkAngles(grayFrame,22.5);
 
             ImageFrame = Convert(frame.ToBitmap());
 
             PostProcessedFrame = Convert(editableGrayFrame.ToBitmap());
         }
 
-        private static Image<Bgr, byte> MarkAngles(Image<Gray, byte> grayFrame)
+        private static Image<Bgr, byte> MarkAngles(Image<Gray, byte> image, double degrees)
         {
-            var editableGrayFrame = grayFrame.Convert<Bgr, byte>();
+            var editableImage = image.Convert<Bgr, byte>();
+            var radians = degrees * (Math.PI / 180);
+            var blackPen = new System.Drawing.Pen(Color.LightGray, 1);
 
-            var blackPen = new System.Drawing.Pen(Color.Black, 1);
-            using (var graphics = Graphics.FromImage(editableGrayFrame.Bitmap))
+            using (var graphics = Graphics.FromImage(editableImage.Bitmap))
             {
-                graphics.DrawLine(blackPen, 0, 0, grayFrame.Width / 2, grayFrame.Height);
-                graphics.DrawLine(blackPen, grayFrame.Width / 4, 0, grayFrame.Width / 2, grayFrame.Height);
-                graphics.DrawLine(blackPen, grayFrame.Width / 2, 0, grayFrame.Width / 2, grayFrame.Height);
-                graphics.DrawLine(blackPen, 3 * grayFrame.Width / 4, 0, grayFrame.Width / 2, grayFrame.Height);
-                graphics.DrawLine(blackPen, grayFrame.Width, 0, grayFrame.Width / 2, grayFrame.Height);
+                for (var currAngle = - Math.PI; currAngle <  0; currAngle += radians)
+                {
+                    var x1 = (image.Width / 2) + (int) (Math.Cos(currAngle) * (image.Width));
+                    var y1 = image.Height + (int) (Math.Sin(currAngle) * (image.Width));
+
+                    graphics.DrawLine(blackPen, x1, 
+                                                y1, 
+                                                image.Width / 2, 
+                                                image.Height);
+                }
             }
-            return editableGrayFrame;
+            return editableImage;
         }
 
         public static Image<Bgr, byte> ConvertToGrayscale(Bitmap original)
