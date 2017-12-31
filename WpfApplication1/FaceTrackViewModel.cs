@@ -9,7 +9,10 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using OpenTK.Graphics.OpenGL;
 using Color = System.Drawing.Color;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace FaceTracker
 {
@@ -108,7 +111,7 @@ namespace FaceTracker
 
         public FaceTrackViewModel()
         {
-            _capture = new Capture();
+            _capture = new Capture {FlipHorizontal = true};
 
             _cascadeFaceClassifier = new CascadeClassifier("haarcascade_frontalface_alt_tree.xml");
             _cascadeEyeClassifier = new CascadeClassifier("haarcascade_eye.xml");
@@ -161,7 +164,7 @@ namespace FaceTracker
             Rectangle[] faces = {};
             if (FaceDetectionEnabled)
                 faces = _cascadeFaceClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
-            
+
 
             foreach (var face in faces)
             {
@@ -170,6 +173,7 @@ namespace FaceTracker
                         (int)(face.Width / ScaleFactor),
                         (int)(face.Height / ScaleFactor)),
                     new Bgr(Color.BurlyWood), 3);
+                
 
                 _previousFacePosition = new Rectangle((int) (face.X / ScaleFactor - ROIOffset),
                     (int) (face.Y / ScaleFactor - ROIOffset),
@@ -192,9 +196,27 @@ namespace FaceTracker
                     new Bgr(Color.Blue), 3);
             }
 
+            var editableGrayFrame = MarkAngles(grayFrame);
+
             ImageFrame = Convert(frame.ToBitmap());
 
-            PostProcessedFrame = Convert(grayFrame.ToBitmap());
+            PostProcessedFrame = Convert(editableGrayFrame.ToBitmap());
+        }
+
+        private static Image<Bgr, byte> MarkAngles(Image<Gray, byte> grayFrame)
+        {
+            var editableGrayFrame = grayFrame.Convert<Bgr, byte>();
+
+            var blackPen = new System.Drawing.Pen(Color.Black, 1);
+            using (var graphics = Graphics.FromImage(editableGrayFrame.Bitmap))
+            {
+                graphics.DrawLine(blackPen, 0, 0, grayFrame.Width / 2, grayFrame.Height);
+                graphics.DrawLine(blackPen, grayFrame.Width / 4, 0, grayFrame.Width / 2, grayFrame.Height);
+                graphics.DrawLine(blackPen, grayFrame.Width / 2, 0, grayFrame.Width / 2, grayFrame.Height);
+                graphics.DrawLine(blackPen, 3 * grayFrame.Width / 4, 0, grayFrame.Width / 2, grayFrame.Height);
+                graphics.DrawLine(blackPen, grayFrame.Width, 0, grayFrame.Width / 2, grayFrame.Height);
+            }
+            return editableGrayFrame;
         }
 
         public static Image<Bgr, byte> ConvertToGrayscale(Bitmap original)
