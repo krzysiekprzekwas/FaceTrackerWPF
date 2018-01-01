@@ -163,29 +163,33 @@ namespace FaceTracker
             if (HistogramEqualizationEnabled)
                 grayFrame = EqualizeHistogram(grayFrame);
 
-            Rectangle[] faces = { };
             if (FaceDetectionEnabled)
-                faces = _cascadeFaceClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
+            {
+                var faces = _cascadeFaceClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
 
-            Rectangle[] eyes = { };
+                var face = faces.OrderBy(x => x.Width * x.Height).FirstOrDefault();
+
+                DrawFigure(frame, face);
+
+                if (face.Width * face.Height > 0)
+                {
+                    _previousFacePosition = new Rectangle((int)(face.X / ScaleFactor - ROIOffset),
+                        (int)(face.Y / ScaleFactor - ROIOffset),
+                        (int)(face.Width / ScaleFactor + ROIOffset * 2),
+                        (int)(face.Height / ScaleFactor + ROIOffset * 2));
+                }
+
+                frame.Draw(_previousFacePosition, new Bgr(Color.Chartreuse), 3);
+            }
+
             if (EyeDetectionEnabled)
-                eyes = _cascadeEyeClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
+            {
+                var eyes = _cascadeEyeClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
 
-            var face = faces.OrderBy(x => x.Width * x.Height).First();
+                var eye = eyes.OrderBy(x => x.Width * x.Height).FirstOrDefault();
 
-            DrawFigure(frame, face);
-
-            _previousFacePosition = new Rectangle((int)(face.X / ScaleFactor - ROIOffset),
-                (int)(face.Y / ScaleFactor - ROIOffset),
-                (int)(face.Width / ScaleFactor + ROIOffset * 2),
-                (int)(face.Height / ScaleFactor + ROIOffset * 2));
-
-            frame.Draw(_previousFacePosition, new Bgr(Color.Chartreuse), 3);
-
-            var eye = eyes.OrderBy(x => x.Width * x.Height).First();
-
-            DrawFigure(frame,eye);
-
+                DrawFigure(frame, eye);
+            }
 
             var editableGrayFrame = MarkAngles(grayFrame, 22.5);
 
