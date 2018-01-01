@@ -186,9 +186,13 @@ namespace FaceTracker
             {
                 var eyes = _cascadeEyeClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
 
-                var eye = eyes.OrderBy(x => x.Width * x.Height).FirstOrDefault();
+                var twoEyes = eyes.OrderBy(x => x.Width * x.Height).Take(2).ToList();
 
-                DrawFigure(frame, eye);
+                foreach (var eye in twoEyes)
+                {
+                    DrawFigure(frame, eye);
+                }
+
             }
 
             var editableGrayFrame = MarkAngles(grayFrame, 22.5);
