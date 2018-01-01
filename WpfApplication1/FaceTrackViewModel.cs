@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Emgu.CV;
 using Emgu.CV.Structure;
@@ -154,7 +155,7 @@ namespace FaceTracker
             var frame = _capture.QueryFrame().ToImage<Bgr, byte>();
 
 
-            var grayFrame = frame.Resize(ScaleFactor, 
+            var grayFrame = frame.Resize(ScaleFactor,
                                         Emgu.CV.CvEnum.Inter.Area)
                                         .Convert<Gray, byte>();
 
@@ -162,7 +163,7 @@ namespace FaceTracker
             if (HistogramEqualizationEnabled)
                 grayFrame = EqualizeHistogram(grayFrame);
 
-            Rectangle[] faces = {};
+            Rectangle[] faces = { };
             if (FaceDetectionEnabled)
                 faces = _cascadeFaceClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
 
@@ -170,38 +171,36 @@ namespace FaceTracker
             if (EyeDetectionEnabled)
                 eyes = _cascadeEyeClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
 
-            foreach (var face in faces)
-            {
-                frame.Draw(new Rectangle((int)(face.X / ScaleFactor),
-                        (int)(face.Y / ScaleFactor),
-                        (int)(face.Width / ScaleFactor),
-                        (int)(face.Height / ScaleFactor)),
-                    new Bgr(Color.BurlyWood), 3);
-                
+            var face = faces.OrderBy(x => x.Width * x.Height).First();
 
-                _previousFacePosition = new Rectangle((int) (face.X / ScaleFactor - ROIOffset),
-                    (int) (face.Y / ScaleFactor - ROIOffset),
-                    (int) (face.Width / ScaleFactor + ROIOffset * 2),
-                    (int) (face.Height / ScaleFactor + ROIOffset * 2));
+            DrawFigure(frame, face);
 
-                frame.Draw( _previousFacePosition, new Bgr(Color.Chartreuse), 3);
-            }
+            _previousFacePosition = new Rectangle((int)(face.X / ScaleFactor - ROIOffset),
+                (int)(face.Y / ScaleFactor - ROIOffset),
+                (int)(face.Width / ScaleFactor + ROIOffset * 2),
+                (int)(face.Height / ScaleFactor + ROIOffset * 2));
+
+            frame.Draw(_previousFacePosition, new Bgr(Color.Chartreuse), 3);
+
+            var eye = eyes.OrderBy(x => x.Width * x.Height).First();
+
+            DrawFigure(frame,eye);
 
 
-            foreach (var eye in eyes)
-            {
-                frame.Draw(new Rectangle((int) (eye.X / ScaleFactor),
-                        (int) (eye.Y / ScaleFactor),
-                        (int) (eye.Width / ScaleFactor),
-                        (int) (eye.Height / ScaleFactor)),
-                    new Bgr(Color.Blue), 3);
-            }
-
-            var editableGrayFrame = MarkAngles(grayFrame,22.5);
+            var editableGrayFrame = MarkAngles(grayFrame, 22.5);
 
             ImageFrame = Convert(frame.ToBitmap());
 
             PostProcessedFrame = Convert(editableGrayFrame.ToBitmap());
+        }
+
+        private void DrawFigure(Image<Bgr, byte> frame, Rectangle figure)
+        {
+            frame.Draw(new Rectangle((int)(figure.X / ScaleFactor),
+                    (int)(figure.Y / ScaleFactor),
+                    (int)(figure.Width / ScaleFactor),
+                    (int)(figure.Height / ScaleFactor)),
+                new Bgr(Color.BurlyWood), 3);
         }
 
         private static Image<Bgr, byte> MarkAngles(Image<Gray, byte> image, double degrees)
