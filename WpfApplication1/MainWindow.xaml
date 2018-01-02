@@ -1,7 +1,6 @@
 ﻿<Window x:Class="FaceTracker.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ui="clr-namespace:Emgu.CV.UI;assembly=Emgu.CV.UI"
         xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
         Title="MainWindow" Width="640" Height="480" MinWidth="400" MinHeight="250" 
         KeyDown="MainWindow_OnKeyDown"
@@ -43,6 +42,7 @@
         </StackPanel>
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
         <Image Grid.Column="2" Source="{Binding PostProcessedFrame , Mode=OneWay}"/>
+        <Image Grid.Column="2" Source="{Binding AngleBitmap , Mode=OneWay}"/>
         <Image Grid.Column="0" Source="{Binding ImageFrame , Mode=OneWay}"/>
     </Grid>
 </Window>

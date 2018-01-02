@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using OpenTK.Graphics.OpenGL;
 using Color = System.Drawing.Color;
 using Pen = System.Drawing.Pen;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using Rectangle = System.Drawing.Rectangle;
 
 namespace FaceTracker
@@ -105,6 +106,16 @@ namespace FaceTracker
                 OnPropertyChanged();
             }
         }
+        private BitmapSource _angleBitmap;
+        public BitmapSource AngleBitmap
+        {
+            get { return _angleBitmap; }
+            set
+            {
+                _angleBitmap = value;
+                OnPropertyChanged();
+            }
+        }
 
         private readonly Capture _capture;
         private const int ROIOffset = 30;
@@ -119,7 +130,19 @@ namespace FaceTracker
             _cascadeEyeClassifier = new CascadeClassifier("haarcascade_eye.xml");
 
             ScaleFactor = 0.5;
-
+            
+            var image = new Bitmap(640, 480);
+            using (var g = Graphics.FromImage(image))
+            {
+                g.Clear(Color.Transparent);
+                var angles = MarkAngles(image, 22.5);
+                AngleBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+                                 angles.GetHbitmap(),
+                                 IntPtr.Zero,
+                                 System.Windows.Int32Rect.Empty,
+                                 BitmapSizeOptions.FromWidthAndHeight(angles.Width, angles.Height));
+            }
+            
             _capture.Start();
 
             System.Windows.Forms.Application.Idle += ProcessFrame;
@@ -194,12 +217,10 @@ namespace FaceTracker
                 }
 
             }
-
-            var editableGrayFrame = MarkAngles(grayFrame, 22.5);
-
+            
             ImageFrame = Convert(frame.ToBitmap());
 
-            PostProcessedFrame = Convert(editableGrayFrame.ToBitmap());
+            PostProcessedFrame = Convert(grayFrame.ToBitmap());
         }
 
         private void DrawFigure(Image<Bgr, byte> frame, Rectangle figure)
@@ -211,25 +232,24 @@ namespace FaceTracker
                 new Bgr(Color.BurlyWood), 3);
         }
 
-        private static Image<Bgr, byte> MarkAngles(Image<Gray, byte> image, double degrees)
+        private static Bitmap MarkAngles(Bitmap image, double degrees)
         {
-            var editableImage = image.Convert<Bgr, byte>();
             var radians = degrees * (Math.PI / 180);
             var blackPen = new System.Drawing.Pen(Color.LightGray, 1);
 
-            using (var graphics = Graphics.FromImage(editableImage.Bitmap))
+            using (var graphics = Graphics.FromImage(image))
             {
                 for (var currAngle = 0.0; currAngle < Math.PI / 2; currAngle += radians)
                 {
-
                     DrawLineAtAngle(image, currAngle, graphics, blackPen);
                     DrawLineAtAngle(image, -currAngle, graphics, blackPen);
                 }
             }
-            return editableImage;
+
+            return image;
         }
 
-        private static void DrawLineAtAngle(Image<Gray, byte> image, double currAngle, Graphics graphics, Pen blackPen)
+        private static void DrawLineAtAngle(Bitmap image, double currAngle, Graphics graphics, Pen blackPen)
         {
             var x2 = (image.Width / 2) + (int) (Math.Cos(currAngle - Math.PI / 2) * (image.Width));
             var y2 = image.Height + (int) (Math.Sin(currAngle - Math.PI / 2) * (image.Width));
