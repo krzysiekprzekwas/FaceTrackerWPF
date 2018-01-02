@@ -14,6 +14,7 @@ using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using OpenTK.Graphics.OpenGL;
 using Color = System.Drawing.Color;
+using Pen = System.Drawing.Pen;
 using Rectangle = System.Drawing.Rectangle;
 
 namespace FaceTracker
@@ -95,7 +96,6 @@ namespace FaceTracker
         private readonly CascadeClassifier _cascadeEyeClassifier;
 
         private BitmapSource _postProcessedFrame;
-
         public BitmapSource PostProcessedFrame
         {
             get { return _postProcessedFrame; }
@@ -219,18 +219,25 @@ namespace FaceTracker
 
             using (var graphics = Graphics.FromImage(editableImage.Bitmap))
             {
-                for (var currAngle = - Math.PI; currAngle <  0; currAngle += radians)
+                for (var currAngle = 0.0; currAngle < Math.PI / 2; currAngle += radians)
                 {
-                    var x1 = (image.Width / 2) + (int) (Math.Cos(currAngle) * (image.Width));
-                    var y1 = image.Height + (int) (Math.Sin(currAngle) * (image.Width));
 
-                    graphics.DrawLine(blackPen, x1, 
-                                                y1, 
-                                                image.Width / 2, 
-                                                image.Height);
+                    DrawLineAtAngle(image, currAngle, graphics, blackPen);
+                    DrawLineAtAngle(image, -currAngle, graphics, blackPen);
                 }
             }
             return editableImage;
+        }
+
+        private static void DrawLineAtAngle(Image<Gray, byte> image, double currAngle, Graphics graphics, Pen blackPen)
+        {
+            var x2 = (image.Width / 2) + (int) (Math.Cos(currAngle - Math.PI / 2) * (image.Width));
+            var y2 = image.Height + (int) (Math.Sin(currAngle - Math.PI / 2) * (image.Width));
+
+            graphics.DrawLine(blackPen, x2,
+                y2,
+                image.Width / 2,
+                image.Height);
         }
 
         public static Image<Bgr, byte> ConvertToGrayscale(Bitmap original)
