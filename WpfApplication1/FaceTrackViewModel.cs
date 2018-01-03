@@ -22,6 +22,18 @@ namespace FaceTracker
 {
     public class FaceTrackViewModel : INotifyPropertyChanged
     {
+        private double _eyeBasedAngle;
+
+        public double EyeBasedAngle
+        {
+            get { return _eyeBasedAngle; }
+            set
+            {
+                _eyeBasedAngle = value;
+                OnPropertyChanged();
+            }
+        }
+
         private double _scaleFactor;
 
         public double ScaleFactor

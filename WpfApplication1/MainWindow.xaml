@@ -34,6 +34,10 @@
                 <Label Content="Hist Equalization" Width="110"></Label>
                 <CheckBox IsChecked="{Binding HistogramEqualizationEnabled, Mode=TwoWay}" VerticalAlignment="Center"/>
             </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="140" Content="{Binding  EyeBasedAngle, Mode=OneWay}" 
+                                                            ContentStringFormat="{}Face agnle: {0}"></Label>
+            </StackPanel>
             <StackPanel Orientation="Horizontal" >
                 <wpfTool:DecimalUpDown Value="{Binding ScaleFactor, Mode=TwoWay}" FormatString="F2" Height="25" Width="125" Margin="5,2,2,2"
                     Increment="0.01" Maximum="1" Minimum="0.01"/>  
