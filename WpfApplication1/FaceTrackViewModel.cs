@@ -313,18 +313,7 @@ namespace FaceTracker
             g.Dispose();
             return new Image<Bgr, byte>(newBitmap);
         }
-
-        public BitmapImage Convert(Bitmap src)
-        {
-            var ms = new MemoryStream();
-            src.Save(ms, ImageFormat.Bmp);
-            var image = new BitmapImage();
-            image.BeginInit();
-            ms.Seek(0, SeekOrigin.Begin);
-            image.StreamSource = ms;
-            image.EndInit();
-            return image;
-        }
+        
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
