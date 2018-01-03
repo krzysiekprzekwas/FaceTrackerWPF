@@ -203,7 +203,7 @@ namespace FaceTracker
 
                 var face = faces.OrderBy(x => x.Width * x.Height).FirstOrDefault();
 
-                DrawFigure(frame, face);
+                DrawFigure(frame, face, Color.BurlyWood);
 
                 if (face.Width * face.Height > 0)
                 {
@@ -213,7 +213,8 @@ namespace FaceTracker
                         (int)(face.Height / ScaleFactor + ROIOffset * 2));
                 }
 
-                frame.Draw(_previousFacePosition, new Bgr(Color.Chartreuse), 3);
+                DrawFigure(frame,_previousFacePosition, Color.Chartreuse);
+                
             }
 
             if (EyeDetectionEnabled)
@@ -224,7 +225,7 @@ namespace FaceTracker
 
                 foreach (var eye in twoEyes)
                 {
-                    DrawFigure(frame, eye);
+                    DrawFigure(frame, eye, Color.BurlyWood);
                 }
 
                 if (twoEyes.Count == 2)
@@ -242,13 +243,13 @@ namespace FaceTracker
             PostProcessedFrame = grayFrame.Bitmap;
         }
 
-        private void DrawFigure(Image<Bgr, byte> frame, Rectangle figure)
+        private void DrawFigure(Image<Bgr, byte> frame, Rectangle figure, Color color)
         {
             frame.Draw(new Rectangle((int)(figure.X / ScaleFactor),
                     (int)(figure.Y / ScaleFactor),
                     (int)(figure.Width / ScaleFactor),
                     (int)(figure.Height / ScaleFactor)),
-                new Bgr(Color.BurlyWood), 3);
+                new Bgr(color), 3);
         }
 
         private static Bitmap MarkAngles(Bitmap image, double degrees)
