@@ -108,8 +108,8 @@ namespace FaceTracker
         private readonly CascadeClassifier _cascadeFaceClassifier;
         private readonly CascadeClassifier _cascadeEyeClassifier;
 
-        private BitmapSource _postProcessedFrame;
-        public BitmapSource PostProcessedFrame
+        private Bitmap _postProcessedFrame;
+        public Bitmap PostProcessedFrame
         {
             get { return _postProcessedFrame; }
             set
@@ -150,7 +150,10 @@ namespace FaceTracker
 
                 AngleBitmap = MarkAngles(image, 22.5);
             }
-            
+
+            PostProcessedFrame = new Bitmap(640, 480);
+
+
             _capture.Start();
 
             System.Windows.Forms.Application.Idle += ProcessFrame;
@@ -236,7 +239,7 @@ namespace FaceTracker
             
             ImageFrame = Convert(frame.ToBitmap());
 
-            PostProcessedFrame = Convert(grayFrame.ToBitmap());
+            PostProcessedFrame = grayFrame.Bitmap;
         }
 
         private void DrawFigure(Image<Bgr, byte> frame, Rectangle figure)
