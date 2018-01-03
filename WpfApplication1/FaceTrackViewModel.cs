@@ -58,9 +58,9 @@ namespace FaceTracker
             }
         }
 
-        private BitmapSource _imageFrame = new BitmapImage();
+        private Bitmap _imageFrame;
 
-        public BitmapSource ImageFrame
+        public Bitmap ImageFrame
         {
             get { return _imageFrame; }
             set
@@ -152,7 +152,7 @@ namespace FaceTracker
             }
 
             PostProcessedFrame = new Bitmap(640, 480);
-
+            ImageFrame = new Bitmap(640, 480);
 
             _capture.Start();
 
@@ -237,7 +237,7 @@ namespace FaceTracker
 
             }
             
-            ImageFrame = Convert(frame.ToBitmap());
+            ImageFrame = frame.Bitmap;
 
             PostProcessedFrame = grayFrame.Bitmap;
         }
