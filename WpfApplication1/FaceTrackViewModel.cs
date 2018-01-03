@@ -118,8 +118,8 @@ namespace FaceTracker
                 OnPropertyChanged();
             }
         }
-        private BitmapSource _angleBitmap;
-        public BitmapSource AngleBitmap
+        private Bitmap _angleBitmap;
+        public Bitmap AngleBitmap
         {
             get { return _angleBitmap; }
             set
@@ -147,12 +147,8 @@ namespace FaceTracker
             using (var g = Graphics.FromImage(image))
             {
                 g.Clear(Color.Transparent);
-                var angles = MarkAngles(image, 22.5);
-                AngleBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-                                 angles.GetHbitmap(),
-                                 IntPtr.Zero,
-                                 System.Windows.Int32Rect.Empty,
-                                 BitmapSizeOptions.FromWidthAndHeight(angles.Width, angles.Height));
+
+                AngleBitmap = MarkAngles(image, 22.5);
             }
             
             _capture.Start();

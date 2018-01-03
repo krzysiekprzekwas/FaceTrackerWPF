@@ -9,6 +9,9 @@
     <Window.DataContext>
         <VM:FaceTrackViewModel/>
     </Window.DataContext>
+    <Window.Resources>
+        <VM:BitmapToBitmapSourceConverter x:Key="BitmapSourceConverter"/>
+    </Window.Resources>
 
         <Grid>
             <Grid.ColumnDefinitions>
@@ -46,7 +49,7 @@
         </StackPanel>
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
         <Image Grid.Column="2" Source="{Binding PostProcessedFrame , Mode=OneWay}"/>
-        <Image Grid.Column="2" Source="{Binding AngleBitmap , Mode=OneWay}"/>
+        <Image Grid.Column="2" Source="{Binding AngleBitmap , Mode=OneWay, Converter={StaticResource BitmapSourceConverter}}"/>
         <Image Grid.Column="0" Source="{Binding ImageFrame , Mode=OneWay}"/>
     </Grid>
 </Window>
