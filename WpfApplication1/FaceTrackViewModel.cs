@@ -221,11 +221,19 @@ namespace FaceTracker
             {
                 var eyes = _cascadeEyeClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
 
-                var twoEyes = eyes.OrderBy(x => x.Width * x.Height).Take(2).ToList();
+                var twoEyes = eyes.OrderBy(x => x.Width * x.Height).Take(2).OrderBy(x => x.X).ToList();
 
                 foreach (var eye in twoEyes)
                 {
                     DrawFigure(frame, eye);
+                }
+
+                if (twoEyes.Count == 2)
+                {
+                    var dx = (twoEyes[0].X + twoEyes[0].Width / 2) - (twoEyes[1].X + twoEyes[1].Width / 2);
+                    var dy = (twoEyes[0].Y + twoEyes[0].Height / 2) - (twoEyes[1].Y + twoEyes[1].Height / 2);
+
+                    EyeBasedAngle = Math.Atan2(dx, dy) * (180.0 / Math.PI) + 90;
                 }
 
             }

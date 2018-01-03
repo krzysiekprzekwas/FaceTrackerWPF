@@ -36,7 +36,7 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Width="140" Content="{Binding  EyeBasedAngle, Mode=OneWay}" 
-                                                            ContentStringFormat="{}Face agnle: {0}"></Label>
+                                                            ContentStringFormat="{}Face agnle: {0:n2}"></Label>
             </StackPanel>
             <StackPanel Orientation="Horizontal" >
                 <wpfTool:DecimalUpDown Value="{Binding ScaleFactor, Mode=TwoWay}" FormatString="F2" Height="25" Width="125" Margin="5,2,2,2"
