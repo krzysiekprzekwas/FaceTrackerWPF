@@ -14,6 +14,7 @@ using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using OpenTK.Graphics.OpenGL;
 using Color = System.Drawing.Color;
+using Ellipse = Emgu.CV.Structure.Ellipse;
 using Pen = System.Drawing.Pen;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using Rectangle = System.Drawing.Rectangle;
@@ -203,7 +204,7 @@ namespace FaceTracker
 
                 var face = faces.OrderBy(x => x.Width * x.Height).FirstOrDefault();
 
-                DrawFigure(frame, face, Color.BurlyWood);
+                DrawRectangle(frame, face, Color.BurlyWood);
 
                 if (face.Width * face.Height > 0)
                 {
@@ -213,7 +214,7 @@ namespace FaceTracker
                         (int)(face.Height / ScaleFactor + ROIOffset * 2));
                 }
 
-                DrawFigure(frame,_previousFacePosition, Color.Chartreuse);
+                DrawRectangle(frame,_previousFacePosition, Color.Chartreuse);
                 
             }
 
@@ -225,8 +226,8 @@ namespace FaceTracker
                 
                 if (twoEyes.Count == 2)
                 {
-                    DrawFigure(frame, twoEyes[0], Color.Brown);
-                    DrawFigure(frame, twoEyes[1], Color.BurlyWood);
+                    DrawEllipse(frame, twoEyes[0], Color.Brown);
+                    DrawEllipse(frame, twoEyes[1], Color.BurlyWood);
                     
                     var dx = (twoEyes[0].X + twoEyes[0].Width / 2) - (twoEyes[1].X + twoEyes[1].Width / 2);
                     var dy = (twoEyes[0].Y + twoEyes[0].Height / 2) - (twoEyes[1].Y + twoEyes[1].Height / 2);
@@ -241,13 +242,21 @@ namespace FaceTracker
             PostProcessedFrame = grayFrame.Bitmap;
         }
 
-        private void DrawFigure(Image<Bgr, byte> frame, Rectangle figure, Color color)
+        private void DrawRectangle(Image<Bgr, byte> frame, Rectangle figure, Color color)
         {
             frame.Draw(new Rectangle((int)(figure.X / ScaleFactor),
                     (int)(figure.Y / ScaleFactor),
                     (int)(figure.Width / ScaleFactor),
                     (int)(figure.Height / ScaleFactor)),
                 new Bgr(color), 3);
+        }
+
+        private void DrawEllipse(Image<Bgr, byte> frame, Rectangle figure, Color color)
+        {
+            frame.Draw(new Ellipse(new PointF((float) (figure.X / ScaleFactor + figure.Width / ScaleFactor / 2),
+                    (float) (figure.Y / ScaleFactor + figure.Height / ScaleFactor / 2)),
+                new SizeF((float) (figure.Width / ScaleFactor),
+                    (float) (figure.Height / ScaleFactor)), 0.0f), new Bgr(color), 3);
         }
 
         private static Bitmap MarkAngles(Bitmap image, double degrees)
