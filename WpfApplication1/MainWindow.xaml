@@ -35,7 +35,7 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal" >
                 <Label Content="Hist Equalization" Width="110"></Label>
-                <CheckBox IsChecked="{Binding HistogramEqualizationEnabled, Mode=TwoWay}" VerticalAlignment="Center"/>
+                <CheckBox x:Name="HistogramEqualizationCheckBox" IsChecked="{Binding HistogramEqualizationEnabled, Mode=TwoWay}" VerticalAlignment="Center"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Width="140" Content="{Binding  EyeBasedAngle, Mode=OneWay}" 
