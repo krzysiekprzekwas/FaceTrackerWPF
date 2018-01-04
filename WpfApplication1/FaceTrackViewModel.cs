@@ -208,10 +208,10 @@ namespace FaceTracker
 
                 if (face.Width * face.Height > 0)
                 {
-                    _previousFacePosition = new Rectangle((int)(face.X / ScaleFactor - ROIOffset),
-                        (int)(face.Y / ScaleFactor - ROIOffset),
-                        (int)(face.Width / ScaleFactor + ROIOffset * 2),
-                        (int)(face.Height / ScaleFactor + ROIOffset * 2));
+                    _previousFacePosition = new Rectangle((int)(face.X - ROIOffset),
+                        (int)(face.Y  - ROIOffset),
+                        (int)(face.Width  + ROIOffset * 2),
+                        (int)(face.Height  + ROIOffset * 2));
                 }
 
                 DrawRectangle(frame,_previousFacePosition, Color.Chartreuse);
