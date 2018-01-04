@@ -222,13 +222,12 @@ namespace FaceTracker
                 var eyes = _cascadeEyeClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
 
                 var twoEyes = eyes.OrderBy(x => x.Width * x.Height).Take(2).OrderBy(x => x.X).ToList();
-
+                
                 if (twoEyes.Count == 2)
                 {
-                    DrawFigure(frame, eyes[0], Color.Brown);
-                    DrawFigure(frame, eyes[1], Color.BurlyWood);
-
-
+                    DrawFigure(frame, twoEyes[0], Color.Brown);
+                    DrawFigure(frame, twoEyes[1], Color.BurlyWood);
+                    
                     var dx = (twoEyes[0].X + twoEyes[0].Width / 2) - (twoEyes[1].X + twoEyes[1].Width / 2);
                     var dy = (twoEyes[0].Y + twoEyes[0].Height / 2) - (twoEyes[1].Y + twoEyes[1].Height / 2);
 
