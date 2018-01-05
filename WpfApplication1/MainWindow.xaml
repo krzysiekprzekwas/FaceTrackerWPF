@@ -5,16 +5,15 @@
         Title="MainWindow" Width="640" Height="480" MinWidth="400" MinHeight="250" 
         KeyDown="MainWindow_OnKeyDown"
         xmlns:VM="clr-namespace:FaceTracker"
-        xmlns:zedGraph="clr-namespace:ZedGraph;assembly=ZedGraph">
-
+        xmlns:toolkitCharting="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+        xmlns:toolkit="clr-namespace:System.Windows.Controls.DataVisualization;assembly=System.Windows.Controls.DataVisualization.Toolkit">
     <Window.DataContext>
         <VM:FaceTrackViewModel/>
     </Window.DataContext>
     <Window.Resources>
         <VM:BitmapToBitmapSourceConverter x:Key="BitmapSourceConverter"/>
     </Window.Resources>
-
-        <Grid>
+    <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             <ColumnDefinition Width="5" />
@@ -46,13 +45,21 @@
                 <wpfTool:DecimalUpDown Value="{Binding ScaleFactor, Mode=TwoWay}" FormatString="F2" Height="25" Width="125" Margin="5,2,2,2"
                     Increment="0.01" Maximum="1" Minimum="0.01"/>  
             </StackPanel>
-            
-            <StackPanel>
-                <Border Background="White" BorderThickness="2" BorderBrush="Black" Grid.Column="1">
-                    
-                </Border>
-            </StackPanel>
 
+            <StackPanel>
+                <toolkitCharting:Chart x:Name="mcChart" Background="Red">
+                    <toolkitCharting:Chart.LegendStyle>
+                        <Style TargetType="Control">
+                            <Setter Property="Width" Value="0"/>
+                            <Setter Property="Height" Value="0"/>
+                        </Style>
+                    </toolkitCharting:Chart.LegendStyle>
+                    <toolkitCharting:Chart.Series>
+                        <toolkitCharting:LineSeries IndependentValueBinding="{Binding Path=Key}" DependentValueBinding="{Binding Path=Value}">
+                        </toolkitCharting:LineSeries>
+                    </toolkitCharting:Chart.Series>
+                </toolkitCharting:Chart>
+            </StackPanel>
         </StackPanel>
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
         <Image Grid.Column="2" Source="{Binding PostProcessedFrame , Mode=OneWay, Converter={StaticResource BitmapSourceConverter}}"/>

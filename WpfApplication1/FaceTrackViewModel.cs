@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -6,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows.Controls.DataVisualization.Charting;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using System.Windows.Media;
@@ -156,6 +158,9 @@ namespace FaceTracker
             ImageFrame = new Bitmap(640, 480);
 
             _capture.Start();
+
+            
+
 
             System.Windows.Forms.Application.Idle += ProcessFrame;
         }
