@@ -4,7 +4,8 @@
         xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
         Title="MainWindow" Width="640" Height="480" MinWidth="400" MinHeight="250" 
         KeyDown="MainWindow_OnKeyDown"
-        xmlns:VM="clr-namespace:FaceTracker">
+        xmlns:VM="clr-namespace:FaceTracker"
+        xmlns:zedGraph="clr-namespace:ZedGraph;assembly=ZedGraph">
 
     <Window.DataContext>
         <VM:FaceTrackViewModel/>
@@ -45,6 +46,12 @@
                 <wpfTool:DecimalUpDown Value="{Binding ScaleFactor, Mode=TwoWay}" FormatString="F2" Height="25" Width="125" Margin="5,2,2,2"
                     Increment="0.01" Maximum="1" Minimum="0.01"/>  
             </StackPanel>
+            
+            <StackPanel>
+                <Border Background="White" BorderThickness="2" BorderBrush="Black" Grid.Column="1">
+                    
+                </Border>
+            </StackPanel>
 
         </StackPanel>
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
@@ -53,3 +60,4 @@
         <Image Grid.Column="0" Source="{Binding ImageFrame , Mode=OneWay, Converter={StaticResource BitmapSourceConverter}}"/>
     </Grid>
 </Window>
+
