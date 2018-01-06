@@ -145,6 +145,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ObservableQueue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
