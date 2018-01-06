@@ -137,8 +137,8 @@ namespace FaceTracker
 
         private Rectangle _previousFacePosition;
 
-        private Queue<KeyValuePair<int, int>> _processTimeQueue;
-        public Queue<KeyValuePair<int,int>> ProcessTimeQueue
+        private FixedSizeObservableQueue<KeyValuePair<int, int>> _processTimeQueue;
+        public FixedSizeObservableQueue<KeyValuePair<int,int>> ProcessTimeQueue
         {
             get { return _processTimeQueue; }
             set
@@ -147,6 +147,8 @@ namespace FaceTracker
                 OnPropertyChanged();
             }
         }
+
+        private int _frameCount = 0;
 
         public FaceTrackViewModel()
         {
@@ -171,13 +173,7 @@ namespace FaceTracker
             _capture.Start();
 
 
-            ProcessTimeQueue = new Queue<KeyValuePair<int, int>>();
-            ProcessTimeQueue.Enqueue(new KeyValuePair<int, int>(1, 30));
-            ProcessTimeQueue.Enqueue(new KeyValuePair<int, int>(2, 30));
-            ProcessTimeQueue.Enqueue(new KeyValuePair<int, int>(3, 30));
-            ProcessTimeQueue.Enqueue(new KeyValuePair<int, int>(4, 30));
-            ProcessTimeQueue.Enqueue(new KeyValuePair<int, int>(5, 30));
-            ProcessTimeQueue.Enqueue(new KeyValuePair<int, int>(6, 30));
+            ProcessTimeQueue = new FixedSizeObservableQueue<KeyValuePair<int, int>>(30);
 
             System.Windows.Forms.Application.Idle += ProcessFrame;
         }
@@ -192,6 +188,9 @@ namespace FaceTracker
             stopwatch.Stop();
 
             FrameGenerationTime = stopwatch.ElapsedMilliseconds;
+
+            ++_frameCount;
+            ProcessTimeQueue.Enqueue(new KeyValuePair<int, int>(_frameCount, (int)(1000/FrameGenerationTime)));
         }
 
         private Image<Gray, byte> EqualizeHistogram(Emgu.CV.Image<Gray,byte> image)
