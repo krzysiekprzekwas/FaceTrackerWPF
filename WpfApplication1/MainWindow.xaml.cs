@@ -30,14 +30,6 @@ namespace FaceTracker
         {
             InitializeComponent();
 
-            ((LineSeries)mcChart.Series[0]).ItemsSource =
-            new []{
-            new KeyValuePair<int, int>(1, 30),
-            new KeyValuePair<int, int>(2, 29),
-            new KeyValuePair<int, int>(3, 28),
-            new KeyValuePair<int, int>(4, 28),
-            new KeyValuePair<int, int>(5, 30) };
-
             ComponentDispatcher.ThreadIdle += (sender, e) => System.Windows.Forms.Application.RaiseIdle(e);
         }
 

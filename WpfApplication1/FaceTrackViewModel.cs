@@ -137,6 +137,17 @@ namespace FaceTracker
 
         private Rectangle _previousFacePosition;
 
+        private Queue<KeyValuePair<int, int>> _processTimeQueue;
+        public Queue<KeyValuePair<int,int>> ProcessTimeQueue
+        {
+            get { return _processTimeQueue; }
+            set
+            {
+                _processTimeQueue = value;
+                OnPropertyChanged();
+            }
+        }
+
         public FaceTrackViewModel()
         {
             _capture = new Capture {FlipHorizontal = true};
@@ -159,8 +170,14 @@ namespace FaceTracker
 
             _capture.Start();
 
-            
 
+            ProcessTimeQueue = new Queue<KeyValuePair<int, int>>();
+            ProcessTimeQueue.Enqueue(new KeyValuePair<int, int>(1, 30));
+            ProcessTimeQueue.Enqueue(new KeyValuePair<int, int>(2, 30));
+            ProcessTimeQueue.Enqueue(new KeyValuePair<int, int>(3, 30));
+            ProcessTimeQueue.Enqueue(new KeyValuePair<int, int>(4, 30));
+            ProcessTimeQueue.Enqueue(new KeyValuePair<int, int>(5, 30));
+            ProcessTimeQueue.Enqueue(new KeyValuePair<int, int>(6, 30));
 
             System.Windows.Forms.Application.Idle += ProcessFrame;
         }
