@@ -102,12 +102,12 @@ namespace FaceTracker
 
             DrawRectangle(frame, _currentFacePosition.FacePosition, Color.BurlyWood);
             if (_previousFacePosition != null)
-                DrawRectangle(frame, _previousFacePosition.FacePosition, Color.Aqua);
+                DrawRectangle(frame, Rectangle.Inflate(_previousFacePosition.FacePosition, 5, 5), Color.Aqua);
 
             DrawEllipse(frame, _currentFacePosition.LeftEyePosition, Color.Brown);
             DrawEllipse(frame, _currentFacePosition.RigthEyePosition, Color.BurlyWood);
 
-            EyeBasedAngle = GetRectangeAngle(_currentFacePosition.LeftEyePosition, _currentFacePosition.RigthEyePosition);
+            EyeBasedAngle = _currentFacePosition.FaceAngle;
 
             ImageFrame = frame.Bitmap;
 
@@ -128,16 +128,6 @@ namespace FaceTracker
             if (HistogramEqualizationEnabled)
                 grayFrame = EqualizeHistogram(grayFrame);
             return grayFrame;
-        }
-
-        private static double GetRectangeAngle(Rectangle rec1, Rectangle rec2)
-        {
-            var dx = (rec1.X + rec1.Width / 2) -
-                     (rec2.X + rec2.Width / 2);
-            var dy = (rec1.Y + rec1.Height / 2) -
-                     (rec2.Y + rec2.Height / 2);
-
-           return Math.Atan2(dx, dy) * (180.0 / Math.PI) + 90;
         }
 
         private void DrawRectangle(Image<Bgr, byte> frame, Rectangle figure, Color color)
