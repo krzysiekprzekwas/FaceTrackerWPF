@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using OpenTK.Graphics.OpenGL;
+using PropertyChanged;
 using Color = System.Drawing.Color;
 using Ellipse = Emgu.CV.Structure.Ellipse;
 using Pen = System.Drawing.Pen;
@@ -25,130 +26,34 @@ namespace FaceTracker
 {
     public class FaceTrackViewModel : INotifyPropertyChanged
     {
-        private double _eyeBasedAngle;
+        public double EyeBasedAngle { get; set; }
 
-        public double EyeBasedAngle
-        {
-            get { return _eyeBasedAngle; }
-            set
-            {
-                _eyeBasedAngle = value;
-                OnPropertyChanged();
-            }
-        }
+        public double ScaleFactor { get; set; }
 
-        private double _scaleFactor;
+        public float FrameGenerationTime { get; set; }
 
-        public double ScaleFactor
-        {
-            get { return _scaleFactor; }
-            set
-            {
-                _scaleFactor = value;
-                OnPropertyChanged();
-            }
-        }
+        public Bitmap ImageFrame { get; set; }
+        
+        public bool FaceDetectionEnabled { get; set; }
+        
+        public bool EyeDetectionEnabled { get; set; }
+        
+        public bool HistogramEqualizationEnabled { get; set; }
+        
+        public Bitmap PostProcessedFrame { get; set; }
 
-        private float _frameGenerationTime;
-
-        public float FrameGenerationTime
-        {
-            get { return _frameGenerationTime; }
-            set
-            {
-                _frameGenerationTime = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private Bitmap _imageFrame;
-
-        public Bitmap ImageFrame
-        {
-            get { return _imageFrame; }
-            set
-            {
-                _imageFrame = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private bool _faceDetectionEnabled;
-
-        public bool FaceDetectionEnabled
-        {
-            get { return _faceDetectionEnabled; }
-            set
-            {
-                _faceDetectionEnabled = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private bool _eyeDetectionEnabled;
-
-        public bool EyeDetectionEnabled
-        {
-            get { return _eyeDetectionEnabled; }
-            set
-            {
-                _eyeDetectionEnabled = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private bool _histogramEqualizationEnabled; 
-        public bool HistogramEqualizationEnabled
-        {
-            get { return _histogramEqualizationEnabled; }
-            set
-            {
-                _histogramEqualizationEnabled = value;
-                OnPropertyChanged();
-            }
-        }
+        public Bitmap AngleBitmap { get; set; }
+        public FixedSizeObservableQueue<KeyValuePair<int, int>> ProcessTimeQueue { get; set; }
 
         private readonly CascadeClassifier _cascadeFaceClassifier;
         private readonly CascadeClassifier _cascadeEyeClassifier;
-
-        private Bitmap _postProcessedFrame;
-        public Bitmap PostProcessedFrame
-        {
-            get { return _postProcessedFrame; }
-            set
-            {
-                _postProcessedFrame = value;
-                OnPropertyChanged();
-            }
-        }
-        private Bitmap _angleBitmap;
-        public Bitmap AngleBitmap
-        {
-            get { return _angleBitmap; }
-            set
-            {
-                _angleBitmap = value;
-                OnPropertyChanged();
-            }
-        }
 
         private readonly Capture _capture;
         private const int ROIOffset = 30;
 
         private Rectangle _previousFacePosition;
 
-        private FixedSizeObservableQueue<KeyValuePair<int, int>> _processTimeQueue;
-        public FixedSizeObservableQueue<KeyValuePair<int,int>> ProcessTimeQueue
-        {
-            get { return _processTimeQueue; }
-            set
-            {
-                _processTimeQueue = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private int _frameCount = 0;
+        private int _frameCount;
 
         public FaceTrackViewModel()
         {
