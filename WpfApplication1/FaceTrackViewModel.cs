@@ -3,24 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using System.Windows.Controls.DataVisualization.Charting;
 using Emgu.CV;
 using Emgu.CV.Structure;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Windows.Shapes;
-using OpenTK.Graphics.OpenGL;
-using PropertyChanged;
 using Color = System.Drawing.Color;
 using Ellipse = Emgu.CV.Structure.Ellipse;
 using Pen = System.Drawing.Pen;
-using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using Rectangle = System.Drawing.Rectangle;
 
 namespace FaceTracker
@@ -48,16 +36,11 @@ namespace FaceTracker
         public FixedSizeObservableQueue<KeyValuePair<int, int>> ProcessTimeQueue { get; set; }
 
         #endregion
-
-        private readonly CascadeClassifier _cascadeFaceClassifier;
-        private readonly CascadeClassifier _cascadeEyeClassifier;
-
+        
         private readonly Capture _capture;
-        private const int ROIOffset = 30;
 
         private Face _previousFacePosition;
         private Face _currentFacePosition;
-
 
         private int _frameCount;
 
@@ -66,9 +49,6 @@ namespace FaceTracker
         public FaceTrackViewModel()
         {
             _capture = new Capture {FlipHorizontal = true};
-
-            _cascadeFaceClassifier = new CascadeClassifier("haarcascade_frontalface_alt_tree.xml");
-            _cascadeEyeClassifier = new CascadeClassifier("haarcascade_eye.xml");
 
             ScaleFactor = 0.5;
             

@@ -39,10 +39,10 @@ namespace FaceTracker
             
             if (facePos.Width * facePos.Height > 0)
             {
-                face.FacePosition = new Rectangle((int) (facePos.X - ROIOffset),
-                    (int) (facePos.Y - ROIOffset),
-                    (int) (facePos.Width + ROIOffset * 2),
-                    (int) (facePos.Height + ROIOffset * 2));
+                face.FacePosition = new Rectangle(facePos.X - ROIOffset,
+                                                  facePos.Y - ROIOffset,
+                                                  facePos.Width + ROIOffset * 2,
+                                                  facePos.Height + ROIOffset * 2);
             }
             var eyes = _cascadeEyeClassifier.DetectMultiScale(grayFrame, 1.1, 10, Size.Empty);
 
