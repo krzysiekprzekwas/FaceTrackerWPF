@@ -26,8 +26,6 @@ namespace FaceTracker
         
         public bool FaceDetectionEnabled { get; set; }
         
-        public bool EyeDetectionEnabled { get; set; }
-        
         public bool HistogramEqualizationEnabled { get; set; }
         
         public Bitmap PostProcessedFrame { get; set; }
@@ -92,22 +90,25 @@ namespace FaceTracker
 
             var frame = _capture.QueryFrame().ToImage<Bgr, byte>();
 
-            _previousFacePosition = _currentFacePosition;
-
             var grayFrame = PreProcessFrame(frame);
 
             PostProcessedFrame = grayFrame.Bitmap;
 
-            _currentFacePosition = fd.GetFacePosition(grayFrame);
+            if (FaceDetectionEnabled)
+            {
+                _previousFacePosition = _currentFacePosition;
 
-            DrawRectangle(frame, _currentFacePosition.FacePosition, Color.BurlyWood);
-            if (_previousFacePosition != null)
-                DrawRectangle(frame, Rectangle.Inflate(_previousFacePosition.FacePosition, 5, 5), Color.Aqua);
+                _currentFacePosition = fd.GetFacePosition(grayFrame);
 
-            DrawEllipse(frame, _currentFacePosition.LeftEyePosition, Color.Brown);
-            DrawEllipse(frame, _currentFacePosition.RigthEyePosition, Color.BurlyWood);
+                DrawRectangle(frame, _currentFacePosition.FacePosition, Color.BurlyWood);
+                if (_previousFacePosition != null)
+                    DrawRectangle(frame, Rectangle.Inflate(_previousFacePosition.FacePosition, 5, 5), Color.Aqua);
 
-            EyeBasedAngle = _currentFacePosition.FaceAngle;
+                DrawEllipse(frame, _currentFacePosition.LeftEyePosition, Color.Brown);
+                DrawEllipse(frame, _currentFacePosition.RigthEyePosition, Color.BurlyWood);
+
+                EyeBasedAngle = _currentFacePosition.FaceAngle;
+            }
 
             ImageFrame = frame.Bitmap;
 
