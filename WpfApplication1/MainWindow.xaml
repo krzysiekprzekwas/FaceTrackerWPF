@@ -30,10 +30,6 @@
                 <CheckBox x:Name="FaceDetectionCheckBox" IsChecked="{Binding FaceDetectionEnabled, Mode=TwoWay}" VerticalAlignment="Center"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" >
-                <Label Content="Eye detection" Width="110"></Label>
-                <CheckBox x:Name="EyeDetectionCheckBox" IsChecked="{Binding EyeDetectionEnabled, Mode=TwoWay}" VerticalAlignment="Center"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" >
                 <Label Content="Hist Equalization" Width="110"></Label>
                 <CheckBox x:Name="HistogramEqualizationCheckBox" IsChecked="{Binding HistogramEqualizationEnabled, Mode=TwoWay}" VerticalAlignment="Center"/>
             </StackPanel>

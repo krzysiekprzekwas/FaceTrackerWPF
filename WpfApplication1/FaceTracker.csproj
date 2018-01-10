@@ -142,6 +142,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="BitmapToBitmapSourceConverter.cs" />
+    <Compile Include="Face.cs" />
+    <Compile Include="FaceDetector.cs" />
     <Compile Include="FaceTrackViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
