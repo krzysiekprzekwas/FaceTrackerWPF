@@ -41,9 +41,6 @@ namespace FaceTracker
                 case Key.F:
                     FaceDetectionCheckBox.IsChecked = !FaceDetectionCheckBox.IsChecked.Value;
                     break;
-                case Key.E:
-                    EyeDetectionCheckBox.IsChecked = !EyeDetectionCheckBox.IsChecked.Value;
-                    break;
                 case Key.H:
                     HistogramEqualizationCheckBox.IsChecked = !HistogramEqualizationCheckBox.IsChecked.Value;
                     break;
