@@ -33,7 +33,38 @@ namespace FaceTracker
         public Bitmap AngleBitmap { get; set; }
         public FixedSizeObservableQueue<KeyValuePair<int, int>> ProcessTimeQueue { get; set; }
 
-        public QualityEnum Quality { get; set; }
+        private QualityEnum _quality;
+        public QualityEnum Quality
+        {
+            get { return _quality;}
+
+            set
+            {
+                _quality = value;
+
+                switch (value)
+                {
+                    case QualityEnum.Minimum:
+                        ScaleFactor = 0.34;
+                        break;
+                    case QualityEnum.Low:
+                        ScaleFactor = 0.41;
+                        break;
+                    case QualityEnum.Medium:
+                        ScaleFactor = 0.50;
+                        break;
+                    case QualityEnum.High:
+                        ScaleFactor = 0.72;
+                        break;
+                    case QualityEnum.Excelent:
+                        ScaleFactor = 1.0;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+        
 
         #endregion
         
@@ -50,7 +81,7 @@ namespace FaceTracker
         {
             _capture = new Capture {FlipHorizontal = true};
 
-            ScaleFactor = 0.5;
+            Quality = QualityEnum.Medium;
             
             var image = new Bitmap(640, 480);
             using (var g = Graphics.FromImage(image))
