@@ -33,6 +33,8 @@ namespace FaceTracker
         public Bitmap AngleBitmap { get; set; }
         public FixedSizeObservableQueue<KeyValuePair<int, int>> ProcessTimeQueue { get; set; }
 
+        public QualityEnum Quality { get; set; }
+
         #endregion
         
         private readonly Capture _capture;

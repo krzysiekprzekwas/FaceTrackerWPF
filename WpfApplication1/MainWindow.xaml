@@ -4,14 +4,15 @@
         xmlns:wpfTool="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
         Title="MainWindow" Width="640" Height="480" MinWidth="400" MinHeight="250" 
         KeyDown="MainWindow_OnKeyDown"
-        xmlns:VM="clr-namespace:FaceTracker"
+        xmlns:vm="clr-namespace:FaceTracker"
         xmlns:toolkitCharting="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
         xmlns:toolkit="clr-namespace:System.Windows.Controls.DataVisualization;assembly=System.Windows.Controls.DataVisualization.Toolkit">
     <Window.DataContext>
-        <VM:FaceTrackViewModel/>
+        <vm:FaceTrackViewModel/>
     </Window.DataContext>
     <Window.Resources>
-        <VM:BitmapToBitmapSourceConverter x:Key="BitmapSourceConverter"/>
+        <vm:BitmapToBitmapSourceConverter x:Key="BitmapSourceConverter"/>
+        <vm:QualityEnumToStringValueConverter x:Key="qualityEnumToStringValueConverter"/>
     </Window.Resources>
     <Grid>
             <Grid.ColumnDefinitions>
@@ -38,8 +39,13 @@
                                                             ContentStringFormat="{}Face agnle: {0:n2}"></Label>
             </StackPanel>
             <StackPanel Orientation="Horizontal" >
+
                 <wpfTool:DecimalUpDown Value="{Binding ScaleFactor, Mode=TwoWay}" FormatString="F2" Height="25" Width="125" Margin="5,2,2,2"
-                    Increment="0.01" Maximum="1" Minimum="0.01"/>  
+                    Increment="0.01" Maximum="1" Minimum="0.01"/>
+
+            </StackPanel>
+            <StackPanel Orientation="Vertical" >
+                <Slider  Width="120" x:Name="mySlider" Margin="10" Minimum="0" IsSnapToTickEnabled="True" Value="{Binding Quality, Mode=TwoWay}"/>
             </StackPanel>
 
             <StackPanel>

@@ -31,6 +31,9 @@ namespace FaceTracker
             InitializeComponent();
 
             ComponentDispatcher.ThreadIdle += (sender, e) => System.Windows.Forms.Application.RaiseIdle(e);
+
+            mySlider.Maximum = Enum.GetNames(typeof(QualityEnum)).Length - 1;
+            
         }
 
 
