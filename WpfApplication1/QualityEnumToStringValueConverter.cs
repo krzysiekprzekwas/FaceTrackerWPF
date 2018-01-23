@@ -14,7 +14,10 @@ namespace FaceTracker
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            //var quality = (QualityEnum)Enum.Parse(typeof(QualityEnum), (string)value);
+            var type = System.Convert.ToInt32((double)value);
+            return (QualityEnum)(type);
+
         }
     }
 }

@@ -45,7 +45,9 @@
 
             </StackPanel>
             <StackPanel Orientation="Vertical" >
-                <Slider  Width="120" x:Name="mySlider" Margin="10" Minimum="0" IsSnapToTickEnabled="True" Value="{Binding Quality, Mode=TwoWay}"/>
+                <Slider  Width="120" x:Name="mySlider" Margin="10" Minimum="0" IsSnapToTickEnabled="True" Value="{Binding Quality, Mode=TwoWay, Converter={StaticResource qualityEnumToStringValueConverter}}"/>
+
+                <TextBlock Text="{Binding Quality, Mode=TwoWay, Converter={StaticResource qualityEnumToStringValueConverter}}" Margin="10"/>
             </StackPanel>
 
             <StackPanel>
