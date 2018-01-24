@@ -4,17 +4,16 @@ using System.Windows.Data;
 
 namespace FaceTracker
 {
-    class QualityEnumToStringValueConverter : IValueConverter
+    class QualityEnumToIntValueConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            QualityEnum quality = (QualityEnum)(value);
-            return quality.ToString();
+            return (int)(QualityEnum)(value);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return (QualityEnum)System.Convert.ToInt32((double)value);
         }
     }
 }

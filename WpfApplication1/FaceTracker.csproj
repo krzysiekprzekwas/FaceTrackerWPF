@@ -134,6 +134,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="QualityEnum.cs" />
+    <Compile Include="QualityEnumToIntValueConverter.cs" />
     <Compile Include="QualityEnumToStringValueConverter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

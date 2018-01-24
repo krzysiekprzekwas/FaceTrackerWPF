@@ -62,6 +62,8 @@ namespace FaceTracker
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
+                OnPropertyChanged();
             }
         }
         

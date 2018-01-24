@@ -13,6 +13,7 @@
     <Window.Resources>
         <vm:BitmapToBitmapSourceConverter x:Key="BitmapSourceConverter"/>
         <vm:QualityEnumToStringValueConverter x:Key="qualityEnumToStringValueConverter"/>
+        <vm:QualityEnumToIntValueConverter x:Key="qualityEnumToIntValueConverter"/>
     </Window.Resources>
     <Grid>
             <Grid.ColumnDefinitions>
@@ -45,7 +46,7 @@
 
             </StackPanel>
             <StackPanel Orientation="Vertical" >
-                <Slider  Width="120" x:Name="mySlider" Margin="10" Minimum="0" IsSnapToTickEnabled="True" Value="{Binding Quality, Mode=TwoWay, Converter={StaticResource qualityEnumToStringValueConverter}}"/>
+                <Slider  Width="120" x:Name="mySlider" Margin="10" Minimum="0" IsSnapToTickEnabled="True" Value="{Binding Quality, Mode=TwoWay, Converter={StaticResource qualityEnumToIntValueConverter}}"/>
 
                 <TextBlock Text="{Binding Quality, Mode=TwoWay, Converter={StaticResource qualityEnumToStringValueConverter}}" Margin="10"/>
             </StackPanel>
