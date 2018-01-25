@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Emgu.CV;
 using Emgu.CV.Structure;
@@ -71,6 +72,8 @@ namespace FaceTracker
         #endregion
         
         private readonly Capture _capture;
+
+        private List<long> _frameGenerationTimeList = new List<long>();
 
         private Face _previousFacePosition;
         private Face _currentFacePosition;
@@ -151,8 +154,15 @@ namespace FaceTracker
 
             FrameGenerationTime = stopwatch.ElapsedMilliseconds;
 
-            ++_frameCount;
-            ProcessTimeQueue.Enqueue(new KeyValuePair<int, int>(_frameCount, (int)(1000 / FrameGenerationTime)));
+            _frameGenerationTimeList.Add(stopwatch.ElapsedMilliseconds);
+
+            if (_frameGenerationTimeList.Count > 3)
+            {
+                ++_frameCount;
+                ProcessTimeQueue.Enqueue(new KeyValuePair<int, int>(_frameCount, (int)(1000 / _frameGenerationTimeList.Average())));
+                _frameGenerationTimeList.Clear();
+
+            }
         }
 
         private Image<Gray, byte> PreProcessFrame(Image<Bgr, byte> frame)
