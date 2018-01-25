@@ -6,7 +6,9 @@
         KeyDown="MainWindow_OnKeyDown"
         xmlns:vm="clr-namespace:FaceTracker"
         xmlns:toolkitCharting="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
-        xmlns:toolkit="clr-namespace:System.Windows.Controls.DataVisualization;assembly=System.Windows.Controls.DataVisualization.Toolkit">
+        xmlns:toolkit="clr-namespace:System.Windows.Controls.DataVisualization;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+        xmlns:chartPrmtvs="clr-namespace:System.Windows.Controls.DataVisualization.Charting.Primitives;assembly=System.Windows.Controls.DataVisualization.Toolkit">
+
     <Window.DataContext>
         <vm:FaceTrackViewModel/>
     </Window.DataContext>
@@ -16,7 +18,34 @@
         <vm:QualityEnumToIntValueConverter x:Key="qualityEnumToIntValueConverter"/>
     </Window.Resources>
     <Grid>
-            <Grid.ColumnDefinitions>
+        <Grid.Resources>
+            <Style TargetType="toolkitCharting:Chart">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="toolkitCharting:Chart">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <toolkit:Title Content="{TemplateBinding Title}" Style="{TemplateBinding TitleStyle}" Margin="1"/>
+                                <Grid Grid.Row="1" Margin="5,0,5,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <chartPrmtvs:EdgePanel x:Name="ChartArea" Style="{TemplateBinding ChartAreaStyle}">
+                                        <Grid Canvas.ZIndex="-1" Style="{TemplateBinding PlotAreaStyle}" />
+                                        <Border Canvas.ZIndex="10" BorderBrush="#FF919191" BorderThickness="1" />
+                                    </chartPrmtvs:EdgePanel>
+                                </Grid>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             <ColumnDefinition Width="5" />
             <ColumnDefinition Width="*" />
@@ -52,17 +81,30 @@
             </StackPanel>
 
             <StackPanel>
-                <toolkitCharting:Chart Background="Red" DataContext="{Binding ProcessTimeQueue, Mode=TwoWay}">
+                <toolkitCharting:Chart Width="130" Height="100" DataContext="{Binding ProcessTimeQueue, Mode=TwoWay}">
                     <toolkitCharting:Chart.LegendStyle>
                         <Style TargetType="Control">
                             <Setter Property="Width" Value="0"/>
                             <Setter Property="Height" Value="0"/>
                         </Style>
                     </toolkitCharting:Chart.LegendStyle>
+                    <toolkitCharting:Chart.Axes>
+                        <toolkitCharting:LinearAxis Minimum="0" Maximum="30" Interval="10" Orientation="Y"/>
+                        <toolkitCharting:LinearAxis  Orientation="X"/>
+                    </toolkitCharting:Chart.Axes>
                     <toolkitCharting:Chart.Series>
-                        <toolkitCharting:LineSeries ItemsSource="{Binding}" IndependentValuePath="Key" DependentValuePath="Value" />
+                        <toolkitCharting:LineSeries ItemsSource="{Binding}" IndependentValuePath="Key" DependentValuePath="Value" >
+                            <toolkitCharting:LineSeries.DataPointStyle>
+                                <Style TargetType="toolkitCharting:LineDataPoint">
+                                    <Setter Property="Opacity" Value="0" />
+                                    <Setter Property="Background" Value="Blue" />
+                                </Style>
+                            </toolkitCharting:LineSeries.DataPointStyle>
+
+                        </toolkitCharting:LineSeries>
+                        
                     </toolkitCharting:Chart.Series>
-                </toolkitCharting:Chart>
+                    </toolkitCharting:Chart>
             </StackPanel>
         </StackPanel>
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
