@@ -17,7 +17,7 @@ namespace FaceTracker
     public class FaceTrackViewModel : INotifyPropertyChanged
     {
         #region Public UI Properties
-        public double EyeBasedAngle { get; set; }
+        public float EyeBasedAngle { get; set; }
 
         public double ScaleFactor { get; set; }
 
@@ -67,6 +67,8 @@ namespace FaceTracker
                 OnPropertyChanged();
             }
         }
+
+        public bool ApplyMaskEnabled { get; set; }
         
 
         #endregion
@@ -138,15 +140,32 @@ namespace FaceTracker
 
                 _currentFacePosition = fd.GetFacePosition(grayFrame);
 
+
                 DrawRectangle(frame, _currentFacePosition.FacePosition, Color.BurlyWood);
+
                 if (_previousFacePosition != null)
                     DrawRectangle(frame, Rectangle.Inflate(_previousFacePosition.FacePosition, 5, 5), Color.Aqua);
 
                 DrawEllipse(frame, _currentFacePosition.LeftEyePosition, Color.Brown);
                 DrawEllipse(frame, _currentFacePosition.RigthEyePosition, Color.BurlyWood);
 
-                EyeBasedAngle = _currentFacePosition.FaceAngle;
+
+
+                EyeBasedAngle = (float)_currentFacePosition.FaceAngle;
             }
+
+
+
+            var mask = Image.FromFile("C:/Users/Krzysiek/Documents/Visual Studio 2015/Projects/WpfApplication1/WpfApplication1/images/carnaval_mask.png");
+            if (ApplyMaskEnabled)
+                using (Graphics g = Graphics.FromImage(frame.Bitmap))
+                {
+                    g.RotateTransform(-EyeBasedAngle);
+
+                    
+                    g.DrawImage(mask, (float)(_currentFacePosition.FacePosition.X * 1 / ScaleFactor), (float)(_currentFacePosition.FacePosition.Y * 1 / ScaleFactor), (float)(_currentFacePosition.FacePosition.Width * 1/ScaleFactor),(float)(_currentFacePosition.FacePosition.Height * 1 / ScaleFactor));
+                    g.RotateTransform(EyeBasedAngle);
+                }
 
             ImageFrame = frame.Bitmap;
 

@@ -106,6 +106,12 @@
                     </toolkitCharting:Chart.Series>
                     </toolkitCharting:Chart>
             </StackPanel>
+
+            <StackPanel Orientation="Vertical" >
+                <Button Click="ButtonBase_OnClick">
+                    <Image Source="images/carnaval_mask.png"/>
+                </Button>
+            </StackPanel>
         </StackPanel>
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
         <Image Grid.Column="2" Source="{Binding PostProcessedFrame , Mode=OneWay, Converter={StaticResource BitmapSourceConverter}}"/>

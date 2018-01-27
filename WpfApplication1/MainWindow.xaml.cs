@@ -49,5 +49,11 @@ namespace FaceTracker
                     break;
             }
         }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            var ctx = (FaceTrackViewModel) DataContext;
+            ctx.ApplyMaskEnabled = !ctx.ApplyMaskEnabled;
+        }
     }
 }
