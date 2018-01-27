@@ -20,10 +20,18 @@ Of course target machine should also be equiped with webcam.
 
 Instalation of project should be covered by Visual Studio. Just dowload or fork repo, open sln file and all nugets and dependencies should be included
 
-
 ## Built With
 
 * [WPF](https://msdn.microsoft.com/pl-pl/library/mt149842.aspx) - Framework for deskop aplications
 * [EmguCV](www.emgu.com) - OpenCV wrapper for c#
 
-## Acknowledgments
+## Screenshots
+
+### Basic face recognition
+![Alt text](faceTrackerImages/img1.png?raw=true "Basic face recognition")
+
+### Face recognition with histogram equalization
+![Alt text](faceTrackerImages/img2.png?raw=true "Face recognition with histogram equalization")
+
+### POC mask overlapiong
+![Alt text](faceTrackerImages/img3.png?raw=true "POC mask overlapiong")
