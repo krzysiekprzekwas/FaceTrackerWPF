@@ -1,10 +1,10 @@
 # FaceTracker
 
-FaceTracker is my attempt to create live face tracking application using built-in webcam
+FaceTracker is my attempt to create a live face tracking application using the built-in webcam. I came up with this project as part of my home programming study related to current university topics. Mainly developed with an attitude for fun and self-education. My final goal was to realize how much work and viewers put sites like Snapchat, Instagram and Messenger into their filters.
 
 ## Getting Started
 
-These instructions should get you a copy of the project up and running on your local machine for development and testing purposes.
+These instructions should get you a copy of the project up and running on your local machine for development and testing purposes. In case of any problem let me know!
 
 ### Prerequisites
 
